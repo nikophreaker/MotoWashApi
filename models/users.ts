@@ -1,0 +1,23 @@
+import { defineMongooseModel } from "#nuxt/mongoose";
+
+export const User = defineMongooseModel({
+  name: "User",
+  schema: {
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+    },
+    licensePlates: {
+      type: [String],
+      required: true,
+    },
+  },
+});
