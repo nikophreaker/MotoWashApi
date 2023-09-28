@@ -128,18 +128,25 @@ export default [
     submenu: [
       {
         isTitle: false,
-        name: "Datatable Clientside",
-        url: "/table/simple",
+        name: "Admin",
+        url: "/table/admin",
         icon: "chevron-right",
         submenu: [],
       },
       {
         isTitle: false,
-        name: "Datatable Serverside",
-        url: "/table/datatable",
+        name: "Datatable Clientside",
+        url: "/table/simple",
         icon: "chevron-right",
         submenu: [],
       },
+      // {
+      //   isTitle: false,
+      //   name: "Datatable Serverside",
+      //   url: "/table/datatable",
+      //   icon: "chevron-right",
+      //   submenu: [],
+      // },
     ],
   },
   {

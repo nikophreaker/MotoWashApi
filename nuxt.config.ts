@@ -10,8 +10,21 @@ export default defineNuxtConfig({
     authSource: process.env.DBAUTHSOURCE,
   },
   imports: {
-    dirs: ["stores"],
+    dirs: ["store"],
   },
+  routeRules: {
+    "/api/**": { swr: false, cache: false },
+    '/**': { swr: true },
+  },
+  typescript: {
+    shim: false,
+    strict: true,
+  },
+  // vue: {  
+  //   compilerOptions: {
+  //     isCustomElement: (tag) => ['TwToast'].includes(tag),
+  //   },
+  // },
   modules: [
     "nuxt-mongoose",
     "nuxt-security",
@@ -62,5 +75,10 @@ export default defineNuxtConfig({
     //     'navbar-height': '100px',
     //   },
     // },
+  },
+  pwa: {
+    workbox: {
+      enabled: false,
+    },
   },
 });

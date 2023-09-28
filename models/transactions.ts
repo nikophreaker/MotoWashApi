@@ -18,6 +18,7 @@ export const Transaction = defineMongooseModel({
     totalAmount: {
       type: String,
       required: true,
+      index: "text"
     },
   },
 });

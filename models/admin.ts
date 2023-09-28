@@ -1,32 +1,30 @@
 import { defineMongooseModel } from "#nuxt/mongoose";
 
-export const Payment = defineMongooseModel({
-  name: "Payment",
+export const Admin = defineMongooseModel({
+  name: "Admin",
   schema: {
-    userId: {
-      type: Number,
+    name: {
+      type: String,
+      required: true,
+      index: "text"
+    },
+    password: {
+      type: String,
+      required: true
+    },
+    email: {
+      type: String,
       unique: true,
       required: true,
+      index: "text"
     },
-    transactionId: {
-      type: Number,
-      required: true,
-    },
-    paymentMethod: {
+    phone: {
       type: String,
+      unique: true,
       required: true,
       index: "text"
     },
-    paymentDate: {
-      type: Date,
-      required: true,
-    },
-    paymentStatus: {
-      type: String,
-      required: true,
-      index: "text"
-    },
-    totalAmount: {
+    role: {
       type: String,
       required: true,
       index: "text"

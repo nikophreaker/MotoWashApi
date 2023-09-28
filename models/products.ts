@@ -6,10 +6,12 @@ export const Product = defineMongooseModel({
     name: {
       type: String,
       required: true,
+      index: "text"
     },
     description: {
       type: String,
       required: true,
+      index: "text"
     },
     stockQuantity: {
       type: Number,
@@ -18,6 +20,7 @@ export const Product = defineMongooseModel({
     price: {
       type: String,
       required: true,
+      index: "text"
     },
   },
 });
