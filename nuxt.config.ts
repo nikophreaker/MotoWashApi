@@ -47,6 +47,7 @@ export default defineNuxtConfig({
   },
   security: {
     basicAuth: {
+      exclude: ["/"],
       name: "admin",
       pass: "admin",
       enabled: true,

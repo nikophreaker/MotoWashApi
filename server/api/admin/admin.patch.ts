@@ -3,7 +3,8 @@ import { Admin } from "~/models/admin";
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
-    const result = await Admin.findOneAndDelete({_id: body.id});
+    const result = Admin.findOneAndUpdate({ filter: {_id: body.id}, update: {name: body.name, password: body.password, email: body.email, phone: body.phone, role: body.role} });
+    // Admin.createIndexes();
     return result;
   } catch (error) {
     return {

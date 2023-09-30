@@ -72,7 +72,7 @@ const datas = ref({
 var bodyGet = new URLSearchParams();
 bodyGet.append("limit", datas.value.limit.toString());
 bodyGet.append("skip", datas.value.offset.toString());
-bodyGet.append("q", datas.value.search.toString());
+bodyGet.append("query", datas.value.search.toString());
 
 const datatableHook = (arg: any) => {
   arg();
@@ -83,41 +83,43 @@ function renameKey(obj: any, oldKey: any, newKey: any) {
   delete obj[oldKey];
 }
 
-const { data, error, execute, refresh } = await useFetch('/api/admin', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/x-www-form-urlencoded'
-  },
-  body: bodyGet,
-  redirect: 'follow'
-})
+// const { data, error, execute, refresh } = await useFetch('/api/admin', {
+//   method: 'POST',
+//   headers: {
+//     'Content-Type': 'application/x-www-form-urlencoded'
+//   },
+//   body: bodyGet,
+//   redirect: 'follow'
+// })
 
-console.log(data.value);
-const finalResult = data.value || [];
-finalResult.forEach((obj: any) => renameKey(obj, '_id', 'id'));
-datas.value.data = finalResult as Array<DatatableData>
+// const finalResult = data.value || [];
+// finalResult.forEach((obj: any) => renameKey(obj, '_id', 'id'));
+// datas.value.data = finalResult as Array<DatatableData>
 
-const getAdmin = await fetch('/api/admin', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/x-www-form-urlencoded'
-  },
-  body: bodyGet,
-  redirect: 'follow'
-}).then((res) => {
-  if (res != undefined) {
-    res.json().then((result) => {
-      const finalResult = result;
-      finalResult.forEach((obj: any) => renameKey(obj, '_id', 'id'));
-      // datas.value.data = finalResult as Array<DatatableData>;
-    })
-  } else {
-  }
-}).catch((err) => {
-})
+async function getAdmin() {
+  await fetch('/api/admin', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: bodyGet,
+    redirect: 'follow'
+  }).then((res) => {
+    if (res != undefined) {
+      res.json().then((result) => {
+        const finalResult = result;
+        finalResult.forEach((obj: any) => renameKey(obj, '_id', 'id'));
+        datas.value.data = finalResult as Array<DatatableData>;
+      })
+    } else {
+    }
+  }).catch((err) => {
+  })
+}
 
-onMounted(async () => getAdmin);
+onMounted(async () => getAdmin());
 
+var modal = ref()
 const deleteAdmin = (id: any) => {
   var bodyDelete = new URLSearchParams();
   bodyDelete.append("id", id);
@@ -131,11 +133,16 @@ const deleteAdmin = (id: any) => {
     redirect: 'follow'
   }).then((res) => {
     if (res != undefined) {
-      refresh
+      getAdmin()
     } else {
     }
   }).catch((err) => {
   })
+}
+
+var currentData = ref()
+function getData(data: any) {
+  currentData.value = data
 }
 
 </script>
@@ -168,31 +175,32 @@ const deleteAdmin = (id: any) => {
             <TwButton variant="primary" class="border border-gray-900">
               Edit
             </TwButton>
-            <TwModal backdrop="static" :full-height="false">
-              <template #trigger>
-                <TwButton variant="danger"> Delete </TwButton>
-              </template>
-              <template #header>
-                <div>Delete {{ data.name }}</div>
-              </template>
-              <template #body>
-                <div>
-                  Are you sure to delete {{ data.name }} ?
-                </div>
-              </template>
-              <template #footer>
-                <div class="absolute right-0">
-                  <TwButton variant="danger" @click="deleteAdmin(data.id)"> Delete </TwButton>
-                  <TwButton variant="primary" class="border border-gray-900 mx-5">
-                    No
-                  </TwButton>
-                </div>
-              </template>
-            </TwModal>
+            <TwButton variant="danger" @click="modal.toggleModal(); getData(data);"> Delete </TwButton>
           </div>
         </template>
       </template>
+      <template #empty>
+        <div class="p-2 rounded">Sorry, No Data Available</div>
+      </template>
     </TwDatatableClient>
+    <TwModal ref="modal" backdrop="static" :full-height="false">
+      <template #header>
+        <div>Delete {{ currentData.name }}</div>
+      </template>
+      <template #body>
+        <div>
+          Are you sure to delete {{ currentData.name }} ?
+        </div>
+      </template>
+      <template #footer>
+        <div class="absolute right-0">
+          <TwButton variant="danger" @click="deleteAdmin(currentData.id); modal.closeModal();"> Delete </TwButton>
+          <TwButton variant="primary" class="border border-gray-900 mx-5" @click="modal.closeModal()">
+            No
+          </TwButton>
+        </div>
+      </template>
+    </TwModal>
     <hr class="my-2 dark:border-gray-700" />
     <div>
       <div class="flex gap-2">
