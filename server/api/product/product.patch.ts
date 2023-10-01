@@ -1,9 +1,9 @@
-import { Admin } from "~/models/admin";
+import { Product } from "~/models/products";
 
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
-    const result = Admin.findOneAndUpdate({_id: body.id}, {name: body.name, password: body.password, email: body.email, phone: body.phone, role: body.role});
+    const result = Product.findOneAndUpdate({_id: body.id}, {name: body.name, description: body.description, stockQuantity: Number(body.stockQuantity), price: body.price});
     // Admin.createIndexes();
     const res = result.then((res)=>{
       return res?.errors != undefined ? {

@@ -25,5 +25,9 @@ export const User = defineMongooseModel({
       required: true,
       index: "text"
     },
+    loyaltyPoints: {
+      type: Number,
+      required: true,
+    },
   },
 });

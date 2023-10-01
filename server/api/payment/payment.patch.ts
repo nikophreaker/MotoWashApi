@@ -1,11 +1,12 @@
-import { Admin } from "~/models/admin";
+import { Payment } from "~/models/payment";
 
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
-    const result = Admin.findOneAndUpdate({_id: body.id}, {name: body.name, password: body.password, email: body.email, phone: body.phone, role: body.role});
+    const result = Payment.findOneAndUpdate({_id: body.id}, {transactionId: body.transactionId, paymentMethod: body.paymentMethod, paymentDate: new Date(body.paymentDate), paymentStatus: body.paymentStatus, totalAmount: body.totalAmount});
     // Admin.createIndexes();
     const res = result.then((res)=>{
+      console.log(res);
       return res?.errors != undefined ? {
             status: 500,
             error: res?.errors,

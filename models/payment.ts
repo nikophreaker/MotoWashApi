@@ -1,21 +1,16 @@
 import { defineMongooseModel } from "#nuxt/mongoose";
+import { mongo } from "mongoose";
 
 export const Payment = defineMongooseModel({
   name: "Payment",
   schema: {
-    userId: {
-      type: Number,
-      unique: true,
-      required: true,
-    },
     transactionId: {
-      type: Number,
+      type: mongo.ObjectId,
       required: true,
     },
     paymentMethod: {
       type: String,
       required: true,
-      index: "text"
     },
     paymentDate: {
       type: Date,
@@ -24,12 +19,10 @@ export const Payment = defineMongooseModel({
     paymentStatus: {
       type: String,
       required: true,
-      index: "text"
     },
     totalAmount: {
       type: String,
       required: true,
-      index: "text"
     },
   },
 });

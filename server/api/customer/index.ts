@@ -1,9 +1,9 @@
-import { Admin } from "~/models/admin";
+import { User } from "~/models/users";
 
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
-    const result = await Admin.find({ "$or": [
+    const result = await User.find({ "$or": [
       {
         name: {
           $regex: body.query,
@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
           $regex: body.query,
           $options: "i"
         },
-        role: {
+        licensePlates: {
           $regex: body.query,
           $options: "i"
         }

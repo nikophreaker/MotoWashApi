@@ -39,8 +39,14 @@ const datas = ref({
       sortable: true,
     },
     {
-      label: "Role",
-      field: "role",
+      label: "License",
+      field: "licensePlates",
+      width: "400px",
+      sortable: true,
+    },
+    {
+      label: "Points",
+      field: "loyaltyPoints",
       width: "400px",
       sortable: true,
     },
@@ -100,8 +106,13 @@ function renameKey(obj: any, oldKey: any, newKey: any) {
   delete obj[oldKey];
 }
 
-async function getAdmin() {
-  await fetch('/api/admin', {
+function stringifyArray(obj: any, oldKey: any, newKey: any) {
+  obj[newKey] = obj[oldKey].toString()
+  delete obj[oldKey]
+}
+
+async function getCustomer() {
+  await fetch('/api/customer', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
@@ -114,6 +125,7 @@ async function getAdmin() {
         if (result.error == undefined) {
           const finalResult = result;
           finalResult.forEach((obj: any) => renameKey(obj, '_id', 'id'));
+          finalResult.forEach((obj: any) => stringifyArray(obj, 'licensePlates', '_licensePlates'))
           datas.value.data = finalResult as Array<DatatableData>;
         }
       })
@@ -123,7 +135,7 @@ async function getAdmin() {
   })
 }
 
-async function addAdmin() {
+async function addCustomer() {
   validator.value.clearErrors();
   await validator.value.validate();
   if (validator.value.fail()) {
@@ -140,9 +152,9 @@ async function addAdmin() {
   bodyPatch.append("name", formData.inputName);
   bodyPatch.append("email", formData.inputEmail);
   bodyPatch.append("phone", formData.inputPhone);
-  bodyPatch.append("password", formData.inputPassword);
-  bodyPatch.append("role", formData.selectRole);
-  $fetch('/api/admin/admin', {
+  bodyPatch.append("licensePlates", arrLicense.value.toString());
+  bodyPatch.append("loyaltyPoints", formData.inputPoint);
+  $fetch('/api/customer/customer', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
@@ -158,7 +170,7 @@ async function addAdmin() {
   })
 }
 
-async function updateAdmin() {
+async function updateCustomer() {
   validator.value.clearErrors();
   await validator.value.validate();
   if (validator.value.fail()) {
@@ -176,9 +188,9 @@ async function updateAdmin() {
   bodyPatch.append("name", formData.inputName);
   bodyPatch.append("email", formData.inputEmail);
   bodyPatch.append("phone", formData.inputPhone);
-  bodyPatch.append("password", formData.inputPassword);
-  bodyPatch.append("role", formData.selectRole);
-  $fetch('/api/admin/admin', {
+  bodyPatch.append("licensePlates", arrLicense.value.toString());
+  bodyPatch.append("loyaltyPoints", formData.inputPoint);
+  $fetch('/api/customer/customer', {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
@@ -194,10 +206,10 @@ async function updateAdmin() {
   })
 }
 
-function deleteAdmin(id: any): Promise<Boolean> {
+function deleteCustomer(id: any): Promise<Boolean> {
   var bodyDelete = new URLSearchParams();
   bodyDelete.append("id", id);
-  const deleted = $fetch('/api/admin/admin', {
+  const deleted = $fetch('/api/customer/customer', {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
@@ -206,7 +218,7 @@ function deleteAdmin(id: any): Promise<Boolean> {
     redirect: 'follow'
   }).then((res) => {
     if (res != undefined) {
-      getAdmin()
+      getCustomer()
       return true;
     } else {
       return false;
@@ -217,7 +229,7 @@ function deleteAdmin(id: any): Promise<Boolean> {
   return deleted;
 }
 
-onMounted(async () => getAdmin());
+onMounted(async () => getCustomer());
 
 
 const composableForm = useForm();
@@ -235,7 +247,7 @@ async function toggleDialog(data: any) {
     if (!isConfirmed) {
       return;
     }
-    deleteAdmin(data.id).then((deleted) => {
+    deleteCustomer(data.id).then((deleted) => {
       if (deleted) {
         toast.success({
           message: `Success Delete ${data.name}`,
@@ -250,7 +262,7 @@ async function toggleDialog(data: any) {
 }
 
 //Form Setup
-const formName = "formAdmin";
+const formName = "formCustomer";
 const isError = ref(false);
 const form = computed(() => composableForm.getForm(formName));
 const validator = computed(() => form.value.validator);
@@ -268,7 +280,7 @@ async function submit(data: any) {
   } else {
     getData(undefined)
     toggleForm()
-    getAdmin()
+    getCustomer()
     clear()
   }
 }
@@ -279,61 +291,61 @@ const formData: {
   inputName: null,
   inputEmail: null,
   inputPhone: null,
-  inputPassword: null,
-  selectRole: null,
+  inputLicense: [],
+  inputPoint: null,
 });
 
 const formRules = {
   inputName: ["required", "string"],
   inputEmail: ["required", "string", "email"],
   inputPhone: ["required", "string"],
-  inputPassword: ["required", "string"],
-  selectRole: ["required"],
+  inputLicense: ["required", "string"],
+  inputPoint: ["required"],
 };
 
 function clear() {
-  formData.selectRole = null;
   formData.inputName = null;
   formData.inputEmail = null;
   formData.inputPhone = null;
-  formData.inputPassword = null;
+  formData.inputLicense = [];
+  formData.inputPoint = null;
+  arrLicense.value = []
 
   validator.value.clearErrors();
 }
 
 var currentData = ref()
+var arrLicense = ref([""])
 function getData(data: any) {
   currentData.value = data
   if (data != undefined) {
     formData.inputName = data.name
     formData.inputEmail = data.email
     formData.inputPhone = data.phone
-    formData.inputPassword = data.password
-    formData.selectRole = data.role
+    formData.inputLicense = data._licensePlates.split(',')
+    formData.inputPoint = data.loyaltyPoints
+    arrLicense.value.pop()
+    formData.inputLicense.forEach((obj: any) => arrLicense.value.push(obj))
   }
 }
-
-const selectionList = [
-  {
-    label: "admin",
-    value: "admin",
-  },
-  {
-    label: "sales",
-    value: "sales",
-  },
-];
 
 function toggleForm() {
   validator.value.clearErrors();
   formShow.value = !formShow.value
 }
 
+function addLicense() {
+  arrLicense.value.push("");
+}
+async function deleteLicense(index: any) {
+  arrLicense.value.splice(index, 1);
+}
+
 </script>
 
 <template>
   <div>
-    <h2 class="text-2xl font-bold">Datatable Admin</h2>
+    <h2 class="text-2xl font-bold">Datatable Customer</h2>
     <hr class="my-2 border dark:border-gray-700" />
     <div v-show="!formShow">
       <div class="col-span-12 flex justify-start gap-1">
@@ -354,8 +366,11 @@ function toggleForm() {
           <template v-if="column.field === 'phone'">
             {{ data.phone }}
           </template>
-          <template v-if="column.field === 'role'">
-            {{ data.role }}
+          <template v-if="column.field === 'licensePlates'">
+            {{ data._licensePlates }}
+          </template>
+          <template v-if="column.field === 'loyaltyPoints'">
+            {{ data.loyaltyPoints }}
           </template>
           <template v-if="column.field === 'action'">
             <div class="flex gap-2 justify-center">
@@ -396,8 +411,8 @@ function toggleForm() {
         class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
         :class="{
           'tw-shake': isError,
-        }" :rules="formRules" @submit="currentData != undefined ? updateAdmin() : addAdmin()" :custom-field-name="{
-  inputName: 'Input', inputEmail: 'Input', inputPhone: 'Input', inputPassword: 'Input',
+        }" :rules="formRules" @submit="currentData != undefined ? updateCustomer() : addCustomer()" :custom-field-name="{
+  inputName: 'Input', inputEmail: 'Input', inputPhone: 'Input', inputPoint: 'Input',
 }">
         <div class="col-span-12">
           <TwInput label="Name" name="inputName" v-model="formData.inputName" placeholder="Input Name" type="text" />
@@ -412,14 +427,29 @@ function toggleForm() {
           <CustomErrorMessage name="inputPhone" />
         </div>
         <div class="col-span-12">
-          <TwInput label="Password" name="inputPassword" v-model="formData.inputPassword" placeholder="Input Password"
-            type="text" />
-          <CustomErrorMessage name="inputPassword" />
+          <div v-for="(input, index) in arrLicense.length" class="input wrapper flex items-center">
+            <div>
+              <TwInput :label="(index <= 0) ? `License Plates` : ``" name="inputLicense" v-model="arrLicense[index]"
+                placeholder="Input License" type="text" />
+              <CustomErrorMessage name="inputLicense" />
+            </div>
+            <div v-if="arrLicense.length <= 1">
+            </div>
+            <div v-else class="input wrapper flex items-center">
+              <TwButton variant="danger" type="button" @click="deleteLicense(index)"
+                class="border border-gray-900 bg-red-800">
+                Delete
+              </TwButton>
+            </div>
+          </div>
+          <TwButton variant="primary" type="button" class="border border-gray-900 bg-gray-800 my-3" @click="addLicense()">
+            Add License Plate
+          </TwButton>
         </div>
         <div class="col-span-12">
-          <TwSelect label="Role" name="selectRole" v-model="formData.selectRole" :items="selectionList"
-            placeholder="Choose select" />
-          <CustomErrorMessage name="selectRole" />
+          <TwInput label="Loyalty Point" name="inputPoint" v-model="formData.inputPoint" placeholder="Input Point"
+            type="number" />
+          <CustomErrorMessage name="inputPoint" />
         </div>
         <div class="col-span-12 flex justify-end gap-1">
           <TwButton variant="primary" type="button" class="border border-gray-900"

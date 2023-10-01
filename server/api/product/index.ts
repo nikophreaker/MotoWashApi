@@ -1,23 +1,19 @@
-import { Admin } from "~/models/admin";
+import { Product } from "~/models/products";
 
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
-    const result = await Admin.find({ "$or": [
+    const result = await Product.find({ "$or": [
       {
         name: {
           $regex: body.query,
           $options: "i"
         },
-        email: {
+        description: {
           $regex: body.query,
           $options: "i"
         },
-        phone: {
-          $regex: body.query,
-          $options: "i"
-        },
-        role: {
+        price: {
           $regex: body.query,
           $options: "i"
         }

@@ -135,6 +135,27 @@ export default [
       },
       {
         isTitle: false,
+        name: "Product",
+        url: "/table/product",
+        icon: "chevron-right",
+        submenu: [],
+      },
+      {
+        isTitle: false,
+        name: "Costumer",
+        url: "/table/costumer",
+        icon: "chevron-right",
+        submenu: [],
+      },
+      {
+        isTitle: false,
+        name: "Transaction",
+        url: "/table/transaction",
+        icon: "chevron-right",
+        submenu: [],
+      },
+      {
+        isTitle: false,
         name: "Datatable Clientside",
         url: "/table/simple",
         icon: "chevron-right",

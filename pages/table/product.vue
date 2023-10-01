@@ -27,20 +27,20 @@ const datas = ref({
       sortable: true,
     },
     {
-      label: "Email",
-      field: "email",
+      label: "Description",
+      field: "description",
       width: "400px",
       sortable: true,
     },
     {
-      label: "Phone",
-      field: "phone",
+      label: "Stock",
+      field: "stock",
       width: "400px",
       sortable: true,
     },
     {
-      label: "Role",
-      field: "role",
+      label: "Price",
+      field: "price",
       width: "400px",
       sortable: true,
     },
@@ -100,8 +100,8 @@ function renameKey(obj: any, oldKey: any, newKey: any) {
   delete obj[oldKey];
 }
 
-async function getAdmin() {
-  await fetch('/api/admin', {
+async function getProduct() {
+  await fetch('/api/product', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
@@ -123,7 +123,7 @@ async function getAdmin() {
   })
 }
 
-async function addAdmin() {
+async function addProduct() {
   validator.value.clearErrors();
   await validator.value.validate();
   if (validator.value.fail()) {
@@ -138,11 +138,10 @@ async function addAdmin() {
   }
   var bodyPatch = new URLSearchParams();
   bodyPatch.append("name", formData.inputName);
-  bodyPatch.append("email", formData.inputEmail);
-  bodyPatch.append("phone", formData.inputPhone);
-  bodyPatch.append("password", formData.inputPassword);
-  bodyPatch.append("role", formData.selectRole);
-  $fetch('/api/admin/admin', {
+  bodyPatch.append("description", formData.textAreaDescription);
+  bodyPatch.append("stockQuantity", formData.inputStock);
+  bodyPatch.append("price", formData.inputPrice);
+  $fetch('/api/product/product', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
@@ -158,7 +157,7 @@ async function addAdmin() {
   })
 }
 
-async function updateAdmin() {
+async function updateProduct() {
   validator.value.clearErrors();
   await validator.value.validate();
   if (validator.value.fail()) {
@@ -174,11 +173,10 @@ async function updateAdmin() {
   var bodyPatch = new URLSearchParams();
   bodyPatch.append("id", currentData.value.id);
   bodyPatch.append("name", formData.inputName);
-  bodyPatch.append("email", formData.inputEmail);
-  bodyPatch.append("phone", formData.inputPhone);
-  bodyPatch.append("password", formData.inputPassword);
-  bodyPatch.append("role", formData.selectRole);
-  $fetch('/api/admin/admin', {
+  bodyPatch.append("description", formData.textAreaDescription);
+  bodyPatch.append("stockQuantity", formData.inputStock);
+  bodyPatch.append("price", formData.inputPrice);
+  $fetch('/api/product/product', {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
@@ -194,10 +192,10 @@ async function updateAdmin() {
   })
 }
 
-function deleteAdmin(id: any): Promise<Boolean> {
+function deleteProduct(id: any): Promise<Boolean> {
   var bodyDelete = new URLSearchParams();
   bodyDelete.append("id", id);
-  const deleted = $fetch('/api/admin/admin', {
+  const deleted = $fetch('/api/product/product', {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
@@ -206,7 +204,7 @@ function deleteAdmin(id: any): Promise<Boolean> {
     redirect: 'follow'
   }).then((res) => {
     if (res != undefined) {
-      getAdmin()
+      getProduct()
       return true;
     } else {
       return false;
@@ -217,7 +215,7 @@ function deleteAdmin(id: any): Promise<Boolean> {
   return deleted;
 }
 
-onMounted(async () => getAdmin());
+onMounted(async () => getProduct());
 
 
 const composableForm = useForm();
@@ -235,7 +233,7 @@ async function toggleDialog(data: any) {
     if (!isConfirmed) {
       return;
     }
-    deleteAdmin(data.id).then((deleted) => {
+    deleteProduct(data.id).then((deleted) => {
       if (deleted) {
         toast.success({
           message: `Success Delete ${data.name}`,
@@ -250,7 +248,7 @@ async function toggleDialog(data: any) {
 }
 
 //Form Setup
-const formName = "formAdmin";
+const formName = "formProduct";
 const isError = ref(false);
 const form = computed(() => composableForm.getForm(formName));
 const validator = computed(() => form.value.validator);
@@ -268,7 +266,7 @@ async function submit(data: any) {
   } else {
     getData(undefined)
     toggleForm()
-    getAdmin()
+    getProduct()
     clear()
   }
 }
@@ -277,26 +275,32 @@ const formData: {
   [key: string]: any;
 } = reactive({
   inputName: null,
-  inputEmail: null,
-  inputPhone: null,
-  inputPassword: null,
-  selectRole: null,
+  inputStock: null,
+  inputPrice: null,
+  textAreaDescription: null,
 });
 
 const formRules = {
   inputName: ["required", "string"],
-  inputEmail: ["required", "string", "email"],
-  inputPhone: ["required", "string"],
-  inputPassword: ["required", "string"],
-  selectRole: ["required"],
+  inputStock: ["required", "numeric"],
+  inputPrice: ["required", "string"],
+  textAreaDescription: [
+    "required",
+    "string",
+    (value: string) => {
+      const MIN_LENGTH = 15;
+      if (!value || value.length < MIN_LENGTH) {
+        return `Min length is ${MIN_LENGTH}, current length is ${value.length}`;
+      }
+    },
+  ],
 };
 
 function clear() {
-  formData.selectRole = null;
   formData.inputName = null;
-  formData.inputEmail = null;
-  formData.inputPhone = null;
-  formData.inputPassword = null;
+  formData.inputStock = null;
+  formData.inputPrice = null;
+  formData.textAreaDescription = null;
 
   validator.value.clearErrors();
 }
@@ -306,38 +310,42 @@ function getData(data: any) {
   currentData.value = data
   if (data != undefined) {
     formData.inputName = data.name
-    formData.inputEmail = data.email
-    formData.inputPhone = data.phone
-    formData.inputPassword = data.password
-    formData.selectRole = data.role
+    formData.textAreaDescription = data.description
+    formData.inputStock = data.stockQuantity
+    formData.inputPrice = data.price
   }
 }
-
-const selectionList = [
-  {
-    label: "admin",
-    value: "admin",
-  },
-  {
-    label: "sales",
-    value: "sales",
-  },
-];
 
 function toggleForm() {
   validator.value.clearErrors();
   formShow.value = !formShow.value
 }
 
+function formatRupiah(angka: String, prefix: any) {
+  var number_string = angka.replace(/[^,\d]/g, '').toString(),
+    split = number_string.split(','),
+    sisa = split[0].length % 3,
+    rupiah = split[0].substr(0, sisa),
+    ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+  if (ribuan) {
+    var separator = sisa ? '.' : '';
+    rupiah += separator + ribuan.join('.');
+  }
+
+  rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+  return prefix == undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
+}
+
 </script>
 
 <template>
   <div>
-    <h2 class="text-2xl font-bold">Datatable Admin</h2>
+    <h2 class="text-2xl font-bold">Datatable Product</h2>
     <hr class="my-2 border dark:border-gray-700" />
     <div v-show="!formShow">
       <div class="col-span-12 flex justify-start gap-1">
-        <TwButton variant="primary" icon="user-plus" class="border border-gray-900 my-2" @click="toggleForm();">
+        <TwButton variant="primary" icon="plus-square" class="border border-gray-900 my-2" @click="toggleForm();">
           Add Data
         </TwButton>
       </div>
@@ -348,14 +356,14 @@ function toggleForm() {
           <template v-if="column.field === 'name'">
             {{ data.name }}
           </template>
-          <template v-if="column.field === 'email'">
-            {{ data.email }}
+          <template v-if="column.field === 'description'">
+            {{ data.description }}
           </template>
-          <template v-if="column.field === 'phone'">
-            {{ data.phone }}
+          <template v-if="column.field === 'stock'">
+            {{ Number(data.stockQuantity) }}
           </template>
-          <template v-if="column.field === 'role'">
-            {{ data.role }}
+          <template v-if="column.field === 'price'">
+            {{ formatRupiah(data.price.toString(), "Rp. ") }}
           </template>
           <template v-if="column.field === 'action'">
             <div class="flex gap-2 justify-center">
@@ -396,30 +404,26 @@ function toggleForm() {
         class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
         :class="{
           'tw-shake': isError,
-        }" :rules="formRules" @submit="currentData != undefined ? updateAdmin() : addAdmin()" :custom-field-name="{
-  inputName: 'Input', inputEmail: 'Input', inputPhone: 'Input', inputPassword: 'Input',
+        }" :rules="formRules" @submit="currentData != undefined ? updateProduct() : addProduct()" :custom-field-name="{
+  inputName: 'Input', textAreaExample: 'Text Area', inputStock: 'Input', inputPrice: 'Input',
 }">
         <div class="col-span-12">
           <TwInput label="Name" name="inputName" v-model="formData.inputName" placeholder="Input Name" type="text" />
           <CustomErrorMessage name="inputName" />
         </div>
         <div class="col-span-12">
-          <TwInput label="Email" name="inputEmail" v-model="formData.inputEmail" placeholder="Input Email" type="text" />
-          <CustomErrorMessage name="inputEmail" />
+          <TwTextarea label="Description" name="textAreaDescription" v-model="formData.textAreaDescription"
+            placeholder="Description" type="text" />
+          <CustomErrorMessage name="textAreaDescription" />
         </div>
         <div class="col-span-12">
-          <TwInput label="Phone" name="inputPhone" v-model="formData.inputPhone" placeholder="Input Phone" type="text" />
-          <CustomErrorMessage name="inputPhone" />
+          <TwInput label="Stock" name="inputStock" v-model="formData.inputStock" placeholder="Input Stock"
+            type="number" />
+          <CustomErrorMessage name="inputStock" />
         </div>
         <div class="col-span-12">
-          <TwInput label="Password" name="inputPassword" v-model="formData.inputPassword" placeholder="Input Password"
-            type="text" />
-          <CustomErrorMessage name="inputPassword" />
-        </div>
-        <div class="col-span-12">
-          <TwSelect label="Role" name="selectRole" v-model="formData.selectRole" :items="selectionList"
-            placeholder="Choose select" />
-          <CustomErrorMessage name="selectRole" />
+          <TwInput label="Price" name="inputPrice" v-model="formData.inputPrice" placeholder="Input Price" type="text" />
+          <CustomErrorMessage name="inputPrice" />
         </div>
         <div class="col-span-12 flex justify-end gap-1">
           <TwButton variant="primary" type="button" class="border border-gray-900"
