@@ -9,18 +9,21 @@ export default defineNuxtConfig({
     pass: process.env.DBPASSWORD,
     authSource: process.env.DBAUTHSOURCE,
   },
+  build: {
+    transpile: ["@vuepic/vue-datepicker"],
+  },
   imports: {
     dirs: ["store"],
   },
   routeRules: {
     "/api/**": { swr: false, cache: false },
-    '/**': { swr: true },
+    "/**": { swr: true },
   },
   typescript: {
     shim: false,
     strict: true,
   },
-  // vue: {  
+  // vue: {
   //   compilerOptions: {
   //     isCustomElement: (tag) => ['TwToast'].includes(tag),
   //   },

@@ -5,6 +5,7 @@
 @import url("./skeleton.css");
 @import url("./scrollbar.css");
 @import url("./package.css");
+@import url("./datepicker.css");
 @import "vue3-tailwind/dist/style.css";
 
 @tailwind base;

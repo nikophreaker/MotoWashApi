@@ -17,6 +17,8 @@ import {
   TwTextarea,
   useForm,
 } from "vue3-tailwind";
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
 
 const datas = ref({
   column: [
@@ -96,7 +98,7 @@ const datas = ref({
     ],
   },
 });
-var formShow = ref(false)
+var formShow = ref(false);
 
 var bodyGet = new URLSearchParams();
 bodyGet.append("limit", datas.value.limit.toString());
@@ -113,32 +115,34 @@ function renameKey(obj: any, oldKey: any, newKey: any) {
 }
 
 function stringifyArray(obj: any, oldKey: any, newKey: any) {
-  obj[newKey] = obj[oldKey].toString()
-  delete obj[oldKey]
+  obj[newKey] = obj[oldKey].toString();
+  delete obj[oldKey];
 }
 
+// Transaction Fetch
 async function getTransaction() {
-  await fetch('/api/transaction', {
-    method: 'POST',
+  await fetch("/api/transaction", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
+      "Content-Type": "application/x-www-form-urlencoded",
     },
     body: bodyGet,
-    redirect: 'follow'
-  }).then((res) => {
-    if (res != undefined) {
-      res.json().then((result) => {
-        if (result.error == undefined) {
-          const finalResult = result;
-          finalResult.forEach((obj: any) => renameKey(obj, '_id', 'id'));
-          // finalResult.forEach((obj: any) => stringifyArray(obj, 'licensePlates', '_licensePlates'))
-          datas.value.data = finalResult as Array<DatatableData>;
-        }
-      })
-    } else {
-    }
-  }).catch((err) => {
+    redirect: "follow",
   })
+    .then((res) => {
+      if (res != undefined) {
+        res.json().then((result) => {
+          if (result.error == undefined) {
+            const finalResult = result;
+            finalResult.forEach((obj: any) => renameKey(obj, "_id", "id"));
+            // finalResult.forEach((obj: any) => stringifyArray(obj, 'licensePlates', '_licensePlates'))
+            datas.value.data = finalResult as Array<DatatableData>;
+          }
+        });
+      } else {
+      }
+    })
+    .catch((err) => {});
 }
 
 async function addTransaction() {
@@ -155,25 +159,28 @@ async function addTransaction() {
     return;
   }
   var bodyPatch = new URLSearchParams();
-  bodyPatch.append("name", formData.inputName);
-  bodyPatch.append("email", formData.inputEmail);
-  bodyPatch.append("phone", formData.inputPhone);
-  bodyPatch.append("licensePlates", arrLicense.value.toString());
-  bodyPatch.append("loyaltyPoints", formData.inputPoint);
-  $fetch('/api/transaction/transaction', {
-    method: 'POST',
+  bodyPatch.append("userId", formData.selectCustomer);
+  bodyPatch.append("productId", formData.multiSelectProduct);
+  bodyPatch.append("transactionDate", formData.inputDate);
+  bodyPatch.append("totalAmount", formData.inputTotal);
+  bodyPatch.append("paymentMethod", formData.inputPaymentMethod);
+  bodyPatch.append("paymentStatus", formData.inputPaymentStatus);
+  $fetch("/api/transaction/transaction", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
+      "Content-Type": "application/x-www-form-urlencoded",
     },
     body: bodyPatch,
-    redirect: 'follow'
-  }).then((res) => {
-    if (res != undefined) {
-      submit(res)
-    }
-  }).catch((err) => {
-    submit(err)
+    redirect: "follow",
   })
+    .then((res) => {
+      if (res != undefined) {
+        submit(res);
+      }
+    })
+    .catch((err) => {
+      submit(err);
+    });
 }
 
 async function updateTransaction() {
@@ -191,52 +198,132 @@ async function updateTransaction() {
   }
   var bodyPatch = new URLSearchParams();
   bodyPatch.append("id", currentData.value.id);
-  bodyPatch.append("name", formData.inputName);
-  bodyPatch.append("email", formData.inputEmail);
-  bodyPatch.append("phone", formData.inputPhone);
-  bodyPatch.append("licensePlates", arrLicense.value.toString());
-  bodyPatch.append("loyaltyPoints", formData.inputPoint);
-  $fetch('/api/transaction/transaction', {
-    method: 'PATCH',
+  bodyPatch.append("userId", formData.selectCustomer);
+  bodyPatch.append("productId", formData.multiSelectProduct);
+  bodyPatch.append("transactionDate", formData.inputDate);
+  bodyPatch.append("totalAmount", formData.inputTotal);
+  bodyPatch.append("paymentMethod", formData.inputPaymentMethod);
+  bodyPatch.append("paymentStatus", formData.inputPaymentStatus);
+  $fetch("/api/transaction/transaction", {
+    method: "PATCH",
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
+      "Content-Type": "application/x-www-form-urlencoded",
     },
     body: bodyPatch,
-    redirect: 'follow'
-  }).then((res) => {
-    if (res != undefined) {
-      submit(res)
-    }
-  }).catch((err) => {
-    submit(err)
+    redirect: "follow",
   })
+    .then((res) => {
+      if (res != undefined) {
+        submit(res);
+      }
+    })
+    .catch((err) => {
+      submit(err);
+    });
 }
 
 function deleteTransaction(id: any): Promise<Boolean> {
   var bodyDelete = new URLSearchParams();
   bodyDelete.append("id", id);
-  const deleted = $fetch('/api/transaction/transaction', {
-    method: 'DELETE',
+  const deleted = $fetch("/api/transaction/transaction", {
+    method: "DELETE",
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
+      "Content-Type": "application/x-www-form-urlencoded",
     },
     body: bodyDelete,
-    redirect: 'follow'
-  }).then((res) => {
-    if (res != undefined) {
-      getTransaction()
-      return true;
-    } else {
-      return false;
-    }
-  }).catch((err) => {
-    return false;
+    redirect: "follow",
   })
+    .then((res) => {
+      if (res != undefined) {
+        getTransaction();
+        return true;
+      } else {
+        return false;
+      }
+    })
+    .catch((err) => {
+      return false;
+    });
   return deleted;
 }
 
-onMounted(async () => getTransaction());
+onMounted(async () => {
+  getTransaction();
+});
 
+onUpdated(async () => {
+  if (formShow.value) {
+    getCustomer();
+    getProduct();
+  }
+});
+
+type list = {
+  label: string;
+  value: string;
+};
+
+var customerList = ref<list[]>([]);
+
+var productList = ref<list[]>([]);
+
+//Customer fetch
+async function getCustomer() {
+  await fetch("/api/customer", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: bodyGet,
+    redirect: "follow",
+  })
+    .then((res) => {
+      if (res != undefined) {
+        customerList.value = [];
+        res.json().then((result) => {
+          if (result.error == undefined) {
+            result.forEach((obj: any) => {
+              customerList.value.push({
+                label: obj.name,
+                value: obj._id,
+              });
+            });
+          }
+        });
+      } else {
+      }
+    })
+    .catch((err) => {});
+}
+
+//Product fetch
+async function getProduct() {
+  await fetch("/api/product", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: bodyGet,
+    redirect: "follow",
+  })
+    .then((res) => {
+      if (res != undefined) {
+        productList.value = [];
+        res.json().then((result) => {
+          if (result.error == undefined) {
+            result.forEach((obj: any) => {
+              productList.value.push({
+                label: obj.name,
+                value: obj._id,
+              });
+            });
+          }
+        });
+      } else {
+      }
+    })
+    .catch((err) => {});
+}
 
 const composableForm = useForm();
 const dialog = useDialog();
@@ -263,7 +350,7 @@ async function toggleDialog(data: any) {
           message: `Failed Delete ${data.name}`,
         });
       }
-    })
+    });
   }
 }
 
@@ -284,69 +371,73 @@ async function submit(data: any) {
       message: data.message,
     });
   } else {
-    getData(undefined)
-    toggleForm()
-    getTransaction()
-    clear()
+    getData(undefined);
+    toggleForm();
+    getTransaction();
+    clear();
   }
 }
 
 const formData: {
   [key: string]: any;
 } = reactive({
-  inputName: null,
-  inputEmail: null,
-  inputPhone: null,
-  inputLicense: [],
-  inputPoint: null,
+  selectCustomer: null,
+  multiSelectProduct: null,
+  inputDate: null,
+  inputTotal: null,
+  inputPaymentMethod: null,
+  inputPaymentStatus: null,
 });
 
 const formRules = {
-  inputName: ["required", "string"],
-  inputEmail: ["required", "string", "email"],
-  inputPhone: ["required", "string"],
-  inputLicense: ["required", "string"],
-  inputPoint: ["required"],
+  selectCustomer: ["required"],
+  multiSelectProduct: ["required"],
+  inputDate: ["required", "string"],
+  inputTotal: ["required"],
+  inputPaymentMethod: ["required", "string"],
+  inputPaymentStatus: ["required", "string"],
 };
 
 function clear() {
-  formData.inputName = null;
-  formData.inputEmail = null;
-  formData.inputPhone = null;
-  formData.inputLicense = [];
-  formData.inputPoint = null;
-  arrLicense.value = []
+  formData.selectCustomer = null;
+  formData.multiSelectProduct = null;
+  formData.inputDate = null;
+  formData.inputTotal = null;
+  formData.inputPaymentMethod = null;
+  formData.inputPaymentStatus = null;
 
   validator.value.clearErrors();
 }
 
-var currentData = ref()
-var arrLicense = ref([""])
+var currentData = ref();
 function getData(data: any) {
-  currentData.value = data
+  currentData.value = data;
   if (data != undefined) {
-    formData.inputName = data.name
-    formData.inputEmail = data.email
-    formData.inputPhone = data.phone
-    formData.inputLicense = data._licensePlates.split(',')
-    formData.inputPoint = data.loyaltyPoints
-    arrLicense.value.pop()
-    formData.inputLicense.forEach((obj: any) => arrLicense.value.push(obj))
+    formData.selectCustomer = data.detail_user[0]._id;
+    formData.multiSelectProduct = data.detail_product.map(
+      (obj: any) => obj._id
+    );
+    formData.inputDate = data.transactionDate;
+    formData.inputTotal = data.totalAmount;
+    formData.inputPaymentMethod = data.paymentMethod;
+    formData.inputPaymentStatus = data.paymentStatus;
   }
 }
 
 function toggleForm() {
   validator.value.clearErrors();
-  formShow.value = !formShow.value
+  formShow.value = !formShow.value;
+  if (formShow.value) {
+    getCustomer();
+    getProduct();
+  }
 }
 
-function addLicense() {
-  arrLicense.value.push("");
-}
-async function deleteLicense(index: any) {
-  arrLicense.value.splice(index, 1);
-}
-
+watch(formData, (value) => {
+  if (value.inputDate != undefined && value.inputDate != null) {
+    formData.inputDate = value.inputDate.toString();
+  }
+});
 </script>
 
 <template>
@@ -355,31 +446,47 @@ async function deleteLicense(index: any) {
     <hr class="my-2 border dark:border-gray-700" />
     <div v-show="!formShow">
       <div class="col-span-12 flex justify-start gap-1">
-        <TwButton variant="primary" icon="file-plus" class="border border-gray-900 my-2" @click="toggleForm();">
+        <TwButton
+          variant="primary"
+          icon="file-plus"
+          class="border border-gray-900 my-2"
+          @click="toggleForm()"
+        >
           Add Data
         </TwButton>
       </div>
-      <TwDatatableClient class="!dark:text-gray-200" v-model:search="datas.search" v-model:limit="datas.limit"
-        v-model:selected="datas.selected" v-model:sort-by="datas.sortBy" v-model:sort-type="datas.sortType"
-        :column="datas.column" :data="datas.data" :setting="datas.setting" @datatable:column-hook="datatableHook">
+      <TwDatatableClient
+        class="!dark:text-gray-200"
+        v-model:search="datas.search"
+        v-model:limit="datas.limit"
+        v-model:selected="datas.selected"
+        v-model:sort-by="datas.sortBy"
+        v-model:sort-type="datas.sortType"
+        :column="datas.column"
+        :data="datas.data"
+        :setting="datas.setting"
+        @datatable:column-hook="datatableHook"
+      >
         <template #row="{ column, data }">
           <template v-if="column.field === 'name'">
-            {{ data.detail_user.map((obj: any) => (obj.name)).toString() }}
+            {{ data.detail_user.map((obj: any) => obj.name).toString() }}
           </template>
           <template v-if="column.field === 'product'">
-            {{ data.detail_product.map((obj: any) => (obj.name)).toString() }}
+            {{ data.detail_product.map((obj: any) => obj.name).toString() }}
           </template>
           <template v-if="column.field === 'date'">
-            {{ (new Date(data.transactionDate)).toLocaleDateString('id-ID', {
-              hour12: false,
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-              second: '2-digit',
-            }) }}
+            {{
+              new Date(data.transactionDate).toLocaleDateString("id-ID", {
+                hour12: false,
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+              })
+            }}
           </template>
           <template v-if="column.field === 'total'">
             {{ data.totalAmount }}
@@ -392,10 +499,19 @@ async function deleteLicense(index: any) {
           </template>
           <template v-if="column.field === 'action'">
             <div class="flex gap-2 justify-center">
-              <TwButton variant="primary" class="border border-gray-900" @click="toggleForm(); getData(data);">
+              <TwButton
+                variant="primary"
+                class="border border-gray-900"
+                @click="
+                  toggleForm();
+                  getData(data);
+                "
+              >
                 Edit
               </TwButton>
-              <TwButton variant="danger" @click="toggleDialog(data);"> Delete </TwButton>
+              <TwButton variant="danger" @click="toggleDialog(data)">
+                Delete
+              </TwButton>
             </div>
           </template>
         </template>
@@ -424,64 +540,122 @@ async function deleteLicense(index: any) {
       </div>
     </div>
     <div v-show="formShow">
-      <h1 class="font-bold">{{ currentData != undefined ? `Update Data ${currentData.name}` : "Tambah Data" }}</h1>
-      <TwForm :name="formName"
+      <h1 class="font-bold">
+        {{
+          currentData != undefined
+            ? `Update Data ${currentData.name}`
+            : "Tambah Data"
+        }}
+      </h1>
+      <TwForm
+        :name="formName"
         class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
         :class="{
           'tw-shake': isError,
-        }" :rules="formRules" @submit="currentData != undefined ? updateTransaction() : addTransaction()"
+        }"
+        :rules="formRules"
+        @submit="
+          currentData != undefined ? updateTransaction() : addTransaction()
+        "
         :custom-field-name="{
-          inputName: 'Input', inputEmail: 'Input', inputPhone: 'Input', inputPoint: 'Input',
-        }">
+          inputDate: 'Input',
+          inputTotal: 'Input',
+          inputPaymentMethod: 'Input',
+          inputPaymentStatus: 'Input',
+        }"
+      >
         <div class="col-span-12">
-          <TwInput label="Name" name="inputName" v-model="formData.inputName" placeholder="Input Name" type="text" />
-          <CustomErrorMessage name="inputName" />
+          <TwSelect
+            label="Name Customer"
+            name="selectCustomer"
+            v-model="formData.selectCustomer"
+            :items="customerList"
+            placeholder="Choose Customer"
+          />
+          <CustomErrorMessage name="selectCustomer" />
         </div>
         <div class="col-span-12">
-          <TwInput label="Email" name="inputEmail" v-model="formData.inputEmail" placeholder="Input Email" type="text" />
-          <CustomErrorMessage name="inputEmail" />
+          <TwMultiSelect
+            label="Select Product"
+            name="multiSelectProduct"
+            v-model="formData.multiSelectProduct"
+            :items="productList"
+            placeholder="Choose Product"
+          />
+          <CustomErrorMessage name="multiSelectProduct" />
         </div>
         <div class="col-span-12">
-          <TwInput label="Phone" name="inputPhone" v-model="formData.inputPhone" placeholder="Input Phone" type="text" />
-          <CustomErrorMessage name="inputPhone" />
+          <TwInput
+            label="Transaction Date"
+            name="inputDate"
+            v-model="formData.inputDate"
+            placeholder="Transaction Date"
+            type="text"
+            disabled
+          />
+          <VueDatePicker
+            class="dp"
+            label="Transaction Date"
+            name="inputDate"
+            v-model="formData.inputDate"
+            placeholder="Input Date"
+            type="text"
+          />
+          <CustomErrorMessage name="inputDate" />
         </div>
         <div class="col-span-12">
-          <div v-for="(input, index) in arrLicense.length" class="input wrapper flex items-center">
-            <div>
-              <TwInput :label="(index <= 0) ? `License Plates` : ``" name="inputLicense" v-model="arrLicense[index]"
-                placeholder="Input License" type="text" />
-              <CustomErrorMessage name="inputLicense" />
-            </div>
-            <div v-if="arrLicense.length <= 1">
-            </div>
-            <div v-else class="input wrapper flex items-center">
-              <TwButton variant="danger" type="button" @click="deleteLicense(index)"
-                class="border border-gray-900 bg-red-800">
-                Delete
-              </TwButton>
-            </div>
-          </div>
-          <TwButton variant="primary" type="button" class="border border-gray-900 bg-gray-800 my-3" @click="addLicense()">
-            Add License Plate
-          </TwButton>
+          <TwInput
+            label="Total Amount"
+            name="inputTotal"
+            v-model="formData.inputTotal"
+            placeholder="Input Total"
+            type="text"
+          />
+          <CustomErrorMessage name="inputTotal" />
         </div>
         <div class="col-span-12">
-          <TwInput label="Loyalty Point" name="inputPoint" v-model="formData.inputPoint" placeholder="Input Point"
-            type="number" />
-          <CustomErrorMessage name="inputPoint" />
+          <TwInput
+            label="Payment Method"
+            name="inputPaymentMethod"
+            v-model="formData.inputPaymentMethod"
+            placeholder="Input Method"
+            type="text"
+          />
+          <CustomErrorMessage name="inputPaymentMethod" />
+        </div>
+        <div class="col-span-12">
+          <TwInput
+            label="Payment Status"
+            name="inputPaymentStatus"
+            v-model="formData.inputPaymentStatus"
+            placeholder="Input Status"
+            type="text"
+          />
+          <CustomErrorMessage name="inputPaymentStatus" />
         </div>
         <div class="col-span-12 flex justify-end gap-1">
-          <TwButton variant="primary" type="button" class="border border-gray-900"
-            @click="clear(); toggleForm(); getData(undefined)">
+          <TwButton
+            variant="primary"
+            type="button"
+            class="border border-gray-900"
+            @click="
+              clear();
+              toggleForm();
+              getData(undefined);
+            "
+          >
             Close
           </TwButton>
-          <TwButton ripple variant="secondary" type="button" class="dark:text-gray-200 dark:!border-gray-800 dark:border"
-            @click="clear()">
+          <TwButton
+            ripple
+            variant="secondary"
+            type="button"
+            class="dark:text-gray-200 dark:!border-gray-800 dark:border"
+            @click="clear()"
+          >
             Reset
           </TwButton>
-          <TwButton variant="primary">
-            Submit
-          </TwButton>
+          <TwButton variant="primary"> Submit </TwButton>
         </div>
       </TwForm>
     </div>
