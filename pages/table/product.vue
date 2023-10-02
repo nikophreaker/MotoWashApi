@@ -18,6 +18,10 @@ import {
   useForm,
 } from "vue3-tailwind";
 
+definePageMeta({
+  middleware: "auth",
+});
+
 const datas = ref({
   column: [
     {
@@ -84,7 +88,7 @@ const datas = ref({
     ],
   },
 });
-var formShow = ref(false)
+var formShow = ref(false);
 
 var bodyGet = new URLSearchParams();
 bodyGet.append("limit", datas.value.limit.toString());
@@ -101,26 +105,27 @@ function renameKey(obj: any, oldKey: any, newKey: any) {
 }
 
 async function getProduct() {
-  await fetch('/api/product', {
-    method: 'POST',
+  await fetch("/api/product", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
+      "Content-Type": "application/x-www-form-urlencoded",
     },
     body: bodyGet,
-    redirect: 'follow'
-  }).then((res) => {
-    if (res != undefined) {
-      res.json().then((result) => {
-        if (result.error == undefined) {
-          const finalResult = result;
-          finalResult.forEach((obj: any) => renameKey(obj, '_id', 'id'));
-          datas.value.data = finalResult as Array<DatatableData>;
-        }
-      })
-    } else {
-    }
-  }).catch((err) => {
+    redirect: "follow",
   })
+    .then((res) => {
+      if (res != undefined) {
+        res.json().then((result) => {
+          if (result.error == undefined) {
+            const finalResult = result;
+            finalResult.forEach((obj: any) => renameKey(obj, "_id", "id"));
+            datas.value.data = finalResult as Array<DatatableData>;
+          }
+        });
+      } else {
+      }
+    })
+    .catch((err) => {});
 }
 
 async function addProduct() {
@@ -141,20 +146,22 @@ async function addProduct() {
   bodyPatch.append("description", formData.textAreaDescription);
   bodyPatch.append("stockQuantity", formData.inputStock);
   bodyPatch.append("price", formData.inputPrice);
-  $fetch('/api/product/product', {
-    method: 'POST',
+  $fetch("/api/product/product", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
+      "Content-Type": "application/x-www-form-urlencoded",
     },
     body: bodyPatch,
-    redirect: 'follow'
-  }).then((res) => {
-    if (res != undefined) {
-      submit(res)
-    }
-  }).catch((err) => {
-    submit(err)
+    redirect: "follow",
   })
+    .then((res) => {
+      if (res != undefined) {
+        submit(res);
+      }
+    })
+    .catch((err) => {
+      submit(err);
+    });
 }
 
 async function updateProduct() {
@@ -176,47 +183,50 @@ async function updateProduct() {
   bodyPatch.append("description", formData.textAreaDescription);
   bodyPatch.append("stockQuantity", formData.inputStock);
   bodyPatch.append("price", formData.inputPrice);
-  $fetch('/api/product/product', {
-    method: 'PATCH',
+  $fetch("/api/product/product", {
+    method: "PATCH",
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
+      "Content-Type": "application/x-www-form-urlencoded",
     },
     body: bodyPatch,
-    redirect: 'follow'
-  }).then((res) => {
-    if (res != undefined) {
-      submit(res)
-    }
-  }).catch((err) => {
-    submit(err)
+    redirect: "follow",
   })
+    .then((res) => {
+      if (res != undefined) {
+        submit(res);
+      }
+    })
+    .catch((err) => {
+      submit(err);
+    });
 }
 
 function deleteProduct(id: any): Promise<Boolean> {
   var bodyDelete = new URLSearchParams();
   bodyDelete.append("id", id);
-  const deleted = $fetch('/api/product/product', {
-    method: 'DELETE',
+  const deleted = $fetch("/api/product/product", {
+    method: "DELETE",
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
+      "Content-Type": "application/x-www-form-urlencoded",
     },
     body: bodyDelete,
-    redirect: 'follow'
-  }).then((res) => {
-    if (res != undefined) {
-      getProduct()
-      return true;
-    } else {
-      return false;
-    }
-  }).catch((err) => {
-    return false;
+    redirect: "follow",
   })
+    .then((res) => {
+      if (res != undefined) {
+        getProduct();
+        return true;
+      } else {
+        return false;
+      }
+    })
+    .catch((err) => {
+      return false;
+    });
   return deleted;
 }
 
 onMounted(async () => getProduct());
-
 
 const composableForm = useForm();
 const dialog = useDialog();
@@ -243,7 +253,7 @@ async function toggleDialog(data: any) {
           message: `Failed Delete ${data.name}`,
         });
       }
-    })
+    });
   }
 }
 
@@ -264,10 +274,10 @@ async function submit(data: any) {
       message: data.message,
     });
   } else {
-    getData(undefined)
-    toggleForm()
-    getProduct()
-    clear()
+    getData(undefined);
+    toggleForm();
+    getProduct();
+    clear();
   }
 }
 
@@ -305,38 +315,37 @@ function clear() {
   validator.value.clearErrors();
 }
 
-var currentData = ref()
+var currentData = ref();
 function getData(data: any) {
-  currentData.value = data
+  currentData.value = data;
   if (data != undefined) {
-    formData.inputName = data.name
-    formData.textAreaDescription = data.description
-    formData.inputStock = data.stockQuantity
-    formData.inputPrice = data.price
+    formData.inputName = data.name;
+    formData.textAreaDescription = data.description;
+    formData.inputStock = data.stockQuantity;
+    formData.inputPrice = data.price;
   }
 }
 
 function toggleForm() {
   validator.value.clearErrors();
-  formShow.value = !formShow.value
+  formShow.value = !formShow.value;
 }
 
 function formatRupiah(angka: String, prefix: any) {
-  var number_string = angka.replace(/[^,\d]/g, '').toString(),
-    split = number_string.split(','),
+  var number_string = angka.replace(/[^,\d]/g, "").toString(),
+    split = number_string.split(","),
     sisa = split[0].length % 3,
     rupiah = split[0].substr(0, sisa),
     ribuan = split[0].substr(sisa).match(/\d{3}/gi);
 
   if (ribuan) {
-    var separator = sisa ? '.' : '';
-    rupiah += separator + ribuan.join('.');
+    var separator = sisa ? "." : "";
+    rupiah += separator + ribuan.join(".");
   }
 
-  rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
-  return prefix == undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
+  rupiah = split[1] != undefined ? rupiah + "," + split[1] : rupiah;
+  return prefix == undefined ? rupiah : rupiah ? "Rp. " + rupiah : "";
 }
-
 </script>
 
 <template>
@@ -345,13 +354,27 @@ function formatRupiah(angka: String, prefix: any) {
     <hr class="my-2 border dark:border-gray-700" />
     <div v-show="!formShow">
       <div class="col-span-12 flex justify-start gap-1">
-        <TwButton variant="primary" icon="plus-square" class="border border-gray-900 my-2" @click="toggleForm();">
+        <TwButton
+          variant="primary"
+          icon="plus-square"
+          class="border border-gray-900 my-2"
+          @click="toggleForm()"
+        >
           Add Data
         </TwButton>
       </div>
-      <TwDatatableClient class="!dark:text-gray-200" v-model:search="datas.search" v-model:limit="datas.limit"
-        v-model:selected="datas.selected" v-model:sort-by="datas.sortBy" v-model:sort-type="datas.sortType"
-        :column="datas.column" :data="datas.data" :setting="datas.setting" @datatable:column-hook="datatableHook">
+      <TwDatatableClient
+        class="!dark:text-gray-200"
+        v-model:search="datas.search"
+        v-model:limit="datas.limit"
+        v-model:selected="datas.selected"
+        v-model:sort-by="datas.sortBy"
+        v-model:sort-type="datas.sortType"
+        :column="datas.column"
+        :data="datas.data"
+        :setting="datas.setting"
+        @datatable:column-hook="datatableHook"
+      >
         <template #row="{ column, data }">
           <template v-if="column.field === 'name'">
             {{ data.name }}
@@ -367,10 +390,19 @@ function formatRupiah(angka: String, prefix: any) {
           </template>
           <template v-if="column.field === 'action'">
             <div class="flex gap-2 justify-center">
-              <TwButton variant="primary" class="border border-gray-900" @click="toggleForm(); getData(data);">
+              <TwButton
+                variant="primary"
+                class="border border-gray-900"
+                @click="
+                  toggleForm();
+                  getData(data);
+                "
+              >
                 Edit
               </TwButton>
-              <TwButton variant="danger" @click="toggleDialog(data);"> Delete </TwButton>
+              <TwButton variant="danger" @click="toggleDialog(data)">
+                Delete
+              </TwButton>
             </div>
           </template>
         </template>
@@ -399,44 +431,91 @@ function formatRupiah(angka: String, prefix: any) {
       </div>
     </div>
     <div v-show="formShow">
-      <h1 class="font-bold">{{ currentData != undefined ? `Update Data ${currentData.name}` : "Tambah Data" }}</h1>
-      <TwForm :name="formName"
+      <h1 class="font-bold">
+        {{
+          currentData != undefined
+            ? `Update Data ${currentData.name}`
+            : "Tambah Data"
+        }}
+      </h1>
+      <TwForm
+        :name="formName"
         class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
         :class="{
           'tw-shake': isError,
-        }" :rules="formRules" @submit="currentData != undefined ? updateProduct() : addProduct()" :custom-field-name="{
-  inputName: 'Input', textAreaExample: 'Text Area', inputStock: 'Input', inputPrice: 'Input',
-}">
+        }"
+        :rules="formRules"
+        @submit="currentData != undefined ? updateProduct() : addProduct()"
+        :custom-field-name="{
+          inputName: 'Input',
+          textAreaExample: 'Text Area',
+          inputStock: 'Input',
+          inputPrice: 'Input',
+        }"
+      >
         <div class="col-span-12">
-          <TwInput label="Name" name="inputName" v-model="formData.inputName" placeholder="Input Name" type="text" />
+          <TwInput
+            label="Name"
+            name="inputName"
+            v-model="formData.inputName"
+            placeholder="Input Name"
+            type="text"
+          />
           <CustomErrorMessage name="inputName" />
         </div>
         <div class="col-span-12">
-          <TwTextarea label="Description" name="textAreaDescription" v-model="formData.textAreaDescription"
-            placeholder="Description" type="text" />
+          <TwTextarea
+            label="Description"
+            name="textAreaDescription"
+            v-model="formData.textAreaDescription"
+            placeholder="Description"
+            type="text"
+          />
           <CustomErrorMessage name="textAreaDescription" />
         </div>
         <div class="col-span-12">
-          <TwInput label="Stock" name="inputStock" v-model="formData.inputStock" placeholder="Input Stock"
-            type="number" />
+          <TwInput
+            label="Stock"
+            name="inputStock"
+            v-model="formData.inputStock"
+            placeholder="Input Stock"
+            type="number"
+          />
           <CustomErrorMessage name="inputStock" />
         </div>
         <div class="col-span-12">
-          <TwInput label="Price" name="inputPrice" v-model="formData.inputPrice" placeholder="Input Price" type="text" />
+          <TwInput
+            label="Price"
+            name="inputPrice"
+            v-model="formData.inputPrice"
+            placeholder="Input Price"
+            type="text"
+          />
           <CustomErrorMessage name="inputPrice" />
         </div>
         <div class="col-span-12 flex justify-end gap-1">
-          <TwButton variant="primary" type="button" class="border border-gray-900"
-            @click="clear(); toggleForm(); getData(undefined)">
+          <TwButton
+            variant="primary"
+            type="button"
+            class="border border-gray-900"
+            @click="
+              clear();
+              toggleForm();
+              getData(undefined);
+            "
+          >
             Close
           </TwButton>
-          <TwButton ripple variant="secondary" type="button" class="dark:text-gray-200 dark:!border-gray-800 dark:border"
-            @click="clear()">
+          <TwButton
+            ripple
+            variant="secondary"
+            type="button"
+            class="dark:text-gray-200 dark:!border-gray-800 dark:border"
+            @click="clear()"
+          >
             Reset
           </TwButton>
-          <TwButton variant="primary">
-            Submit
-          </TwButton>
+          <TwButton variant="primary"> Submit </TwButton>
         </div>
       </TwForm>
     </div>

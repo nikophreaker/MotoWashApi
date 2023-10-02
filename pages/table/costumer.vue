@@ -18,6 +18,10 @@ import {
   useForm,
 } from "vue3-tailwind";
 
+definePageMeta({
+  middleware: "auth",
+});
+
 const datas = ref({
   column: [
     {

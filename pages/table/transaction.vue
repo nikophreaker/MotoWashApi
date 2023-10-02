@@ -20,6 +20,10 @@ import {
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 
+definePageMeta({
+  middleware: "auth",
+});
+
 const datas = ref({
   column: [
     {
