@@ -104,10 +104,10 @@ const datas = ref({
 });
 var formShow = ref(false);
 
-var bodyGet = new URLSearchParams();
-bodyGet.append("limit", datas.value.limit.toString());
-bodyGet.append("skip", datas.value.offset.toString());
-bodyGet.append("query", datas.value.search.toString());
+const filterDate = reactive({
+  startDate: null,
+  endDate: null,
+});
 
 const datatableHook = (arg: any) => {
   arg();
@@ -125,6 +125,13 @@ function stringifyArray(obj: any, oldKey: any, newKey: any) {
 
 // Transaction Fetch
 async function getTransaction() {
+  var bodyGet = new URLSearchParams();
+  bodyGet.append("startDate", filterDate.startDate ? filterDate.startDate : "");
+  bodyGet.append("endDate", filterDate.endDate ? filterDate.endDate : "");
+  bodyGet.append("limit", datas.value.limit.toString());
+  bodyGet.append("skip", datas.value.offset.toString());
+  bodyGet.append("query", datas.value.search.toString());
+
   await fetch("/api/transaction", {
     method: "POST",
     headers: {
@@ -442,6 +449,11 @@ watch(formData, (value) => {
     formData.inputDate = value.inputDate.toString();
   }
 });
+
+//Filter Date
+watch(filterDate, (value) => {
+  getTransaction();
+});
 </script>
 
 <template>
@@ -458,6 +470,24 @@ watch(formData, (value) => {
         >
           Add Data
         </TwButton>
+      </div>
+      <div class="col-span-12 flex justify-start gap-1 my-2">
+        <VueDatePicker
+          class="dp"
+          label="Start Date"
+          name="startDate"
+          v-model="filterDate.startDate"
+          placeholder="Input Start Date"
+          type="text"
+        />
+        <VueDatePicker
+          class="dp"
+          label="End Date"
+          name="endDate"
+          v-model="filterDate.endDate"
+          placeholder="Input End Date"
+          type="text"
+        />
       </div>
       <TwDatatableClient
         class="!dark:text-gray-200"

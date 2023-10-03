@@ -134,6 +134,7 @@ async function getCustomer() {
               stringifyArray(obj, "licensePlates", "_licensePlates")
             );
             datas.value.data = finalResult as Array<DatatableData>;
+            datas.value.setting.limitOption;
           }
         });
       } else {

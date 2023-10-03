@@ -9,10 +9,12 @@ export const User = defineMongooseModel({
     },
     email: {
       type: String,
+      unique: true,
       required: true,
     },
     phone: {
       type: String,
+      unique: true,
       required: true,
     },
     joinAt: {
