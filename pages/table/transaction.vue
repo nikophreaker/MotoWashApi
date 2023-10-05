@@ -285,7 +285,6 @@ async function getCustomer() {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
-    body: bodyGet,
     redirect: "follow",
   })
     .then((res) => {
@@ -314,7 +313,6 @@ async function getProduct() {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
-    body: bodyGet,
     redirect: "follow",
   })
     .then((res) => {

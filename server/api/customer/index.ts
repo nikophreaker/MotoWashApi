@@ -3,23 +3,24 @@ import { User } from "~/models/users";
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
+    let query = body ? body.query : "";
     const result = await User.find({
       $or: [
         {
           name: {
-            $regex: body.query,
+            $regex: query,
             $options: "i",
           },
           email: {
-            $regex: body.query,
+            $regex: query,
             $options: "i",
           },
           phone: {
-            $regex: body.query,
+            $regex: query,
             $options: "i",
           },
           licensePlates: {
-            $regex: body.query,
+            $regex: query,
             $options: "i",
           },
         },

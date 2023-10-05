@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useToast, TwFeather, TwToast } from "vue3-tailwind";
 const { toasts } = useToast();
-const cookieDark = useCookie('dark-mode')
+const cookieDark = useCookie("dark-mode");
 </script>
 
 <template>
@@ -34,6 +34,14 @@ const cookieDark = useCookie('dark-mode')
       >
         Developed with
         <TwFeather class="text-red-500" type="heart" /> By
+        <a
+          class="text-blue-300"
+          href="https://github.com/nikophreaker"
+          target="_blank"
+        >
+          Niko
+        </a>
+        Credit design to
         <a
           class="text-blue-300"
           href="https://github.com/WailanTirajoh"
