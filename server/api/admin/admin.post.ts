@@ -1,46 +1,20 @@
-import { Admin } from "~/models/admin";
+import mysql from 'mysql2/promise'
 
 export default defineEventHandler(async (event) => {
   try {
+    const config = useRuntimeConfig();
+    const con = await mysql.createConnection(config.mysql);
     const body = await readBody(event);
-    const result = new Admin({
-      name: body.name,
-      password: body.password,
-      email: body.email,
-      phone: body.phone,
-      role: body.role,
-    });
-    // Admin.createIndexes();
-    try {
-      return (await result.save()).errors != undefined
-        ? createError({
-            statusCode: 500,
-            data: (await result.save()).errors,
-            statusMessage: "Harap coba kembali",
-          })
-        : result.save();
-    } catch (error: any) {
-      if (error.keyValue != undefined) {
-        return createError({
-          statusCode: 402,
-          data: error.keyValue,
-          statusMessage: `${Object.keys(error.keyValue)} ${Object.values(
-            error.keyValue
-          )} sudah terdaftar`,
-        });
-      } else {
-        return createError({
-          statusCode: 500,
-          data: error.errors,
-          statusMessage: `${Object.values(error.errors)}`,
-        });
-      }
-    }
-  } catch (error) {
+    const [data, fields] = await con.query(`INSERT INTO admin (name, email, password, phone, role) VALUES ('${body.name}','${body.email}','${body.password}','${body.phone}','${body.role}')`);
+    return {
+      statusCode: 200,
+      data: data,
+    };
+  } catch (error: any) {
     return createError({
       statusCode: 500,
       data: error,
-      statusMessage: "Harap coba kembali",
+      statusMessage: `${error.message}`,
     });
   }
 });

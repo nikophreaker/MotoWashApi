@@ -1,47 +1,17 @@
-import { Product } from "~/models/products";
+import mysql from 'mysql2/promise'
 
 export default defineEventHandler(async (event) => {
   try {
+    const config = useRuntimeConfig();
+    const con = await mysql.createConnection(config.mysql);
     const body = await readBody(event);
-    const result = Product.findOneAndUpdate(
-      { _id: body.id },
-      {
-        name: body.name,
-        description: body.description,
-        stockQuantity: Number(body.stockQuantity),
-        price: body.price,
-      }
-    );
-    // Admin.createIndexes();
-    const res = result
-      .then((res) => {
-        return res?.errors != undefined
-          ? createError({
-              statusCode: 500,
-              data: res?.errors,
-              statusMessage: "Harap coba kembali",
-            })
-          : res;
-      })
-      .catch((err) => {
-        if (err.keyValue != undefined) {
-          return createError({
-            statusCode: 402,
-            data: err.keyValue,
-            statusMessage: `${Object.keys(err.keyValue)} ${Object.values(
-              err.keyValue
-            )} sudah terdaftar`,
-          });
-        } else {
-          return createError({
-            statusCode: 500,
-            data: err.errors,
-            statusMessage: `${Object.values(err.errors)}`,
-          });
-        }
-      });
-    return res;
+    const [data, fields] = await con.query(`UPDATE product SET name = '${body.name}', description = '${body.description}', category_id = '${body.category_id}', stock = '${body.stock}', price = '${body.price}' WHERE id = ${body.id}`);
+    return {
+      statusCode: 200,
+      data: data,
+    };
   } catch (error) {
+    console.log(error);
     return createError({
       statusCode: 500,
       data: error,

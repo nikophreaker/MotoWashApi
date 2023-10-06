@@ -1,10 +1,15 @@
-import { User } from "~/models/users";
+import mysql from 'mysql2/promise'
 
 export default defineEventHandler(async (event) => {
   try {
+    const config = useRuntimeConfig();
+    const con = await mysql.createConnection(config.mysql);
     const body = await readBody(event);
-    const result = await User.findOneAndDelete({ _id: body.id });
-    return result;
+    const [data, fields] = await con.query(`DELETE FROM customer WHERE id = ${body.id}`);
+    return {
+      statusCode: 200,
+      data: data,
+    };
   } catch (error) {
     return createError({
       statusCode: 500,

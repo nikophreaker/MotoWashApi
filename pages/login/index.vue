@@ -6,9 +6,16 @@ import {
   TwForm,
   TwInput,
 } from "vue3-tailwind";
+import { useSession, signOut, getProviders } from "next-auth/react"
+
+const { signIn } = useAuth()
 
 definePageMeta({
   layout: "front",
+  auth: {
+    unauthenticatedOnly: true,
+    navigateAuthenticatedTo: '/',
+  }
 });
 
 useHead({
@@ -46,41 +53,41 @@ const login = async () => {
     toggleFormError();
     return;
   }
+  await signIn('credentials', { email: formData.email, password: formData.password })
+  // var urlencoded = new URLSearchParams();
+  // urlencoded.append("email", formData.email);
+  // urlencoded.append("password", formData.password);
 
-  var urlencoded = new URLSearchParams();
-  urlencoded.append("email", formData.email);
-  urlencoded.append("password", formData.password);
-
-  await $fetch('/api/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    body: urlencoded,
-    redirect: 'follow'
-  }).then((res) => {
-    if (res != undefined) {
-      store.saveToken(formData.email + "," + formData.password);
-      store.setRole("admin");
-      toast.success({
-        message: "Loggin success, youre being redirected",
-        lifetime: 1000,
-      });
-      setTimeout(() => {
-        navigateTo("/");
-      }, 1000);
-    } else {
-      toggleFormError();
-      return;
-    }
-  }).catch((err) => {
-    toggleFormError();
-    toast.error({
-      message: "Email & Password combination missmatch",
-      lifetime: 3000,
-    });
-    return;
-  })
+  // await $fetch('/api/login', {
+  //   method: 'POST',
+  //   headers: {
+  //     'Content-Type': 'application/x-www-form-urlencoded'
+  //   },
+  //   body: urlencoded,
+  //   redirect: 'follow'
+  // }).then((res) => {
+  //   if (res != undefined) {
+  //     store.saveToken(formData.email + "," + formData.password);
+  //     store.setRole("admin");
+  //     toast.success({
+  //       message: "Loggin success, youre being redirected",
+  //       lifetime: 1000,
+  //     });
+  //     setTimeout(() => {
+  //       navigateTo("/");
+  //     }, 1000);
+  //   } else {
+  //     toggleFormError();
+  //     return;
+  //   }
+  // }).catch((err) => {
+  //   toggleFormError();
+  //   toast.error({
+  //     message: "Email & Password combination missmatch",
+  //     lifetime: 3000,
+  //   });
+  //   return;
+  // })
 };
 </script>
 

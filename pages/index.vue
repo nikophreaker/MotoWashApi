@@ -5,13 +5,11 @@ useSeoMeta({
   title: "Dashboard",
 });
 
-definePageMeta({
-  middleware: "auth",
-});
 // const store = useTokenStore();
 // if (store.userRole == "admin" && store.userToken != "") {
 //   navigateTo("/login");
 // }
+
 import {
   Chart as ChartJS,
   Title,
@@ -39,13 +37,7 @@ ChartJS.register(
 
 const options = {
   responsive: true,
-  maintainAspectRatio: true,
-  legend: {
-    labels: {
-      fontColor: "blue",
-      fontSize: 28,
-    },
-  },
+  maintainAspectRatio: false,
 };
 function getRandomInt() {
   return Math.floor(Math.random() * (50 - 5 + 1)) + 5;
@@ -173,7 +165,7 @@ async function getTransaction() {
       } else {
       }
     })
-    .catch((err) => {});
+    .catch((err) => { });
 }
 async function getProductTransaction() {
   var bodyGet = new URLSearchParams();
@@ -212,7 +204,7 @@ async function getProductTransaction() {
       } else {
       }
     })
-    .catch((err) => {});
+    .catch((err) => { });
 }
 
 onMounted(() => {
@@ -268,20 +260,13 @@ async function getCharge() {
     <h1 class="text-3xl font-bold">Dashboard</h1>
     <hr class="my-2 border dark:border-gray-700" />
     <div class="col-span-12 flex justify-start gap-1">
-      <TwButton
-        variant="primary"
-        icon="user-plus"
-        class="border border-gray-900 my-2"
-        @click="getCharge()"
-      >
+      <TwButton variant="primary" icon="user-plus" class="border border-gray-900 my-2" @click="getCharge()">
         Get Charge Midtrans
       </TwButton>
     </div>
     <div class="grid grid-cols-12 gap-2">
       <div class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3">
-        <div
-          class="p-2 rounded-lg bg-white dark:bg-gray-800 shadow flex justify-between gap-2 h-full"
-        >
+        <div class="p-2 rounded-lg bg-white dark:bg-gray-800 shadow flex justify-between gap-2 h-full">
           <div class="flex flex-col justify-between">
             <div class="text-gray-500 dark:text-gray-400 font-medium">
               Today's Money
@@ -292,16 +277,13 @@ async function getCharge() {
             </div>
           </div>
           <div
-            class="bg-gradient-to-tl from-gray-600 to-gray-900 rounded-lg text-white p-2 flex items-center justify-center px-4"
-          >
+            class="bg-gradient-to-tl from-gray-600 to-gray-900 rounded-lg text-white p-2 flex items-center justify-center px-4">
             <TwFeather type="dollar-sign"></TwFeather>
           </div>
         </div>
       </div>
       <div class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3">
-        <div
-          class="p-2 rounded-lg bg-white dark:bg-gray-800 shadow flex justify-between gap-2 h-full"
-        >
+        <div class="p-2 rounded-lg bg-white dark:bg-gray-800 shadow flex justify-between gap-2 h-full">
           <div class="flex flex-col justify-between">
             <div class="text-gray-500 dark:text-gray-400 font-medium">
               Today's Users
@@ -312,16 +294,13 @@ async function getCharge() {
             </div>
           </div>
           <div
-            class="bg-gradient-to-tl from-gray-600 to-gray-900 rounded-lg text-white p-2 flex items-center justify-center px-4"
-          >
+            class="bg-gradient-to-tl from-gray-600 to-gray-900 rounded-lg text-white p-2 flex items-center justify-center px-4">
             <TwFeather type="aperture"></TwFeather>
           </div>
         </div>
       </div>
       <div class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3">
-        <div
-          class="p-2 rounded-lg bg-white dark:bg-gray-800 shadow flex justify-between gap-2 h-full"
-        >
+        <div class="p-2 rounded-lg bg-white dark:bg-gray-800 shadow flex justify-between gap-2 h-full">
           <div class="flex flex-col justify-between">
             <div class="text-gray-500 dark:text-gray-400 font-medium">
               New Clients
@@ -332,16 +311,13 @@ async function getCharge() {
             </div>
           </div>
           <div
-            class="bg-gradient-to-tl from-gray-600 to-gray-900 rounded-lg text-white p-2 flex items-center justify-center px-4"
-          >
+            class="bg-gradient-to-tl from-gray-600 to-gray-900 rounded-lg text-white p-2 flex items-center justify-center px-4">
             <TwFeather type="users"></TwFeather>
           </div>
         </div>
       </div>
       <div class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3">
-        <div
-          class="p-2 rounded-lg bg-white dark:bg-gray-800 shadow flex justify-between gap-2 h-full"
-        >
+        <div class="p-2 rounded-lg bg-white dark:bg-gray-800 shadow flex justify-between gap-2 h-full">
           <div class="flex flex-col justify-between">
             <div class="text-gray-500 dark:text-gray-400 font-medium">
               Sales
@@ -352,17 +328,14 @@ async function getCharge() {
             </div>
           </div>
           <div
-            class="bg-gradient-to-tl from-gray-600 to-gray-900 rounded-lg text-white p-2 flex items-center justify-center px-4"
-          >
+            class="bg-gradient-to-tl from-gray-600 to-gray-900 rounded-lg text-white p-2 flex items-center justify-center px-4">
             <TwFeather type="shopping-cart"></TwFeather>
           </div>
         </div>
       </div>
     </div>
     <div class="grid grid-cols-12 gap-2 mt-2">
-      <div
-        class="col-span-12 md:col-span-7 rounded-lg p-4 shadow bg-white dark:bg-gray-800"
-      >
+      <div class="col-span-12 md:col-span-7 rounded-lg p-4 shadow bg-white dark:bg-gray-800">
         <div class="">
           <div class="text-gray-500 dark:text-gray-400 font-medium">
             Transaction Per
@@ -374,32 +347,20 @@ async function getCharge() {
               </template>
               <template #content>
                 <div
-                  class="block w-full px-4 py-2 text-sm leading-5 text-gray-700 dark:text-gray-200 text-left hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 transition"
-                >
-                  <div
-                    class="flex gap-2 items-center"
-                    @click="setFilterDate('day')"
-                  >
+                  class="block w-full px-4 py-2 text-sm leading-5 text-gray-700 dark:text-gray-200 text-left hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 transition">
+                  <div class="flex gap-2 items-center" @click="setFilterDate('day')">
                     <div class="">Day</div>
                   </div>
                 </div>
                 <div
-                  class="block w-full px-4 py-2 text-sm leading-5 text-gray-700 dark:text-gray-200 text-left hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 transition"
-                >
-                  <div
-                    class="flex gap-2 items-center"
-                    @click="setFilterDate('month')"
-                  >
+                  class="block w-full px-4 py-2 text-sm leading-5 text-gray-700 dark:text-gray-200 text-left hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 transition">
+                  <div class="flex gap-2 items-center" @click="setFilterDate('month')">
                     <div class="">Month</div>
                   </div>
                 </div>
                 <div
-                  class="block w-full px-4 py-2 text-sm leading-5 text-gray-700 dark:text-gray-200 text-left hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 transition"
-                >
-                  <div
-                    class="flex gap-2 items-center"
-                    @click="setFilterDate('year')"
-                  >
+                  class="block w-full px-4 py-2 text-sm leading-5 text-gray-700 dark:text-gray-200 text-left hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 transition">
+                  <div class="flex gap-2 items-center" @click="setFilterDate('year')">
                     <div class="">Year</div>
                   </div>
                 </div>
@@ -411,9 +372,7 @@ async function getCharge() {
           </div>
         </div>
       </div>
-      <div
-        class="col-span-12 md:col-span-5 rounded-lg p-4 shadow bg-white dark:bg-gray-800"
-      >
+      <div class="col-span-12 md:col-span-5 rounded-lg p-4 shadow bg-white dark:bg-gray-800">
         <div class="">
           <div class="text-gray-500 dark:text-gray-400 font-medium">
             Sales volume

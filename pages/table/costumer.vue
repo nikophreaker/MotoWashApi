@@ -18,9 +18,6 @@ import {
   useForm,
 } from "vue3-tailwind";
 
-definePageMeta({
-  middleware: "auth",
-});
 
 const datas = ref({
   column: [
@@ -42,15 +39,21 @@ const datas = ref({
       width: "400px",
       sortable: true,
     },
+    // {
+    //   label: "License",
+    //   field: "licensePlates",
+    //   width: "400px",
+    //   sortable: true,
+    // },
     {
-      label: "License",
-      field: "licensePlates",
+      label: "JoinDate",
+      field: "created_at",
       width: "400px",
       sortable: true,
     },
     {
       label: "Points",
-      field: "loyaltyPoints",
+      field: "loyalty_points",
       width: "400px",
       sortable: true,
     },
@@ -128,19 +131,13 @@ async function getCustomer() {
       if (res != undefined) {
         res.json().then((result) => {
           if (result.error == undefined) {
-            const finalResult = result;
-            finalResult.forEach((obj: any) => renameKey(obj, "_id", "id"));
-            finalResult.forEach((obj: any) =>
-              stringifyArray(obj, "licensePlates", "_licensePlates")
-            );
-            datas.value.data = finalResult as Array<DatatableData>;
-            datas.value.setting.limitOption;
+            datas.value.data = result.data as Array<DatatableData>
           }
         });
       } else {
       }
     })
-    .catch((err) => {});
+    .catch((err) => { });
 }
 
 async function addCustomer() {
@@ -160,7 +157,7 @@ async function addCustomer() {
   bodyPatch.append("name", formData.inputName);
   bodyPatch.append("email", formData.inputEmail);
   bodyPatch.append("phone", formData.inputPhone);
-  bodyPatch.append("licensePlates", arrLicense.value.toString());
+  // bodyPatch.append("licensePlates", arrLicense.value.toString());
   bodyPatch.append("loyaltyPoints", formData.inputPoint);
   $fetch("/api/customer/customer", {
     method: "POST",
@@ -198,7 +195,7 @@ async function updateCustomer() {
   bodyPatch.append("name", formData.inputName);
   bodyPatch.append("email", formData.inputEmail);
   bodyPatch.append("phone", formData.inputPhone);
-  bodyPatch.append("licensePlates", arrLicense.value.toString());
+  // bodyPatch.append("licensePlates", arrLicense.value.toString());
   bodyPatch.append("loyaltyPoints", formData.inputPoint);
   $fetch("/api/customer/customer", {
     method: "PATCH",
@@ -304,7 +301,7 @@ const formData: {
   inputName: null,
   inputEmail: null,
   inputPhone: null,
-  inputLicense: [],
+  // inputLicense: [],
   inputPoint: null,
 });
 
@@ -312,7 +309,7 @@ const formRules = {
   inputName: ["required", "string"],
   inputEmail: ["required", "string", "email"],
   inputPhone: ["required", "string"],
-  inputLicense: ["required", "string"],
+  // inputLicense: ["required", "string"],
   inputPoint: ["required"],
 };
 
@@ -320,27 +317,27 @@ function clear() {
   formData.inputName = null;
   formData.inputEmail = null;
   formData.inputPhone = null;
-  formData.inputLicense = [];
+  // formData.inputLicense = [];
   formData.inputPoint = null;
-  arrLicense.value = [];
+  // arrLicense.value = [];
 
   validator.value.clearErrors();
 }
 
 var currentData = ref();
-var arrLicense = ref([""]);
+// var arrLicense = ref([""]);
 function getData(data: any) {
   currentData.value = data;
   if (data != undefined) {
     formData.inputName = data.name;
     formData.inputEmail = data.email;
     formData.inputPhone = data.phone;
-    formData.inputLicense = data._licensePlates.split(",");
-    formData.inputPoint = data.loyaltyPoints;
-    arrLicense.value.pop();
-    formData.inputLicense.forEach((obj: any) => arrLicense.value.push(obj));
+    // formData.inputLicense = data._licensePlates.split(",");
+    formData.inputPoint = data.loyalty_points;
+    // arrLicense.value.pop();
+    // formData.inputLicense.forEach((obj: any) => arrLicense.value.push(obj));
   } else {
-    arrLicense.value.push("");
+    // arrLicense.value.push("");
   }
 }
 
@@ -349,12 +346,12 @@ function toggleForm() {
   formShow.value = !formShow.value;
 }
 
-function addLicense() {
-  arrLicense.value.push("");
-}
-async function deleteLicense(index: any) {
-  arrLicense.value.splice(index, 1);
-}
+// function addLicense() {
+//   arrLicense.value.push("");
+// }
+// async function deleteLicense(index: any) {
+//   arrLicense.value.splice(index, 1);
+// }
 </script>
 
 <template>
@@ -363,27 +360,13 @@ async function deleteLicense(index: any) {
     <hr class="my-2 border dark:border-gray-700" />
     <div v-show="!formShow">
       <div class="col-span-12 flex justify-start gap-1">
-        <TwButton
-          variant="primary"
-          icon="user-plus"
-          class="border border-gray-900 my-2"
-          @click="toggleForm()"
-        >
+        <TwButton variant="primary" icon="user-plus" class="border border-gray-900 my-2" @click="toggleForm()">
           Add Data
         </TwButton>
       </div>
-      <TwDatatableClient
-        class="!dark:text-gray-200"
-        v-model:search="datas.search"
-        v-model:limit="datas.limit"
-        v-model:selected="datas.selected"
-        v-model:sort-by="datas.sortBy"
-        v-model:sort-type="datas.sortType"
-        :column="datas.column"
-        :data="datas.data"
-        :setting="datas.setting"
-        @datatable:column-hook="datatableHook"
-      >
+      <TwDatatableClient class="!dark:text-gray-200" v-model:search="datas.search" v-model:limit="datas.limit"
+        v-model:selected="datas.selected" v-model:sort-by="datas.sortBy" v-model:sort-type="datas.sortType"
+        :column="datas.column" :data="datas.data" :setting="datas.setting" @datatable:column-hook="datatableHook">
         <template #row="{ column, data }">
           <template v-if="column.field === 'name'">
             {{ data.name }}
@@ -394,22 +377,32 @@ async function deleteLicense(index: any) {
           <template v-if="column.field === 'phone'">
             {{ data.phone }}
           </template>
-          <template v-if="column.field === 'licensePlates'">
+          <!-- <template v-if="column.field === 'licensePlates'">
             {{ data._licensePlates }}
+          </template> -->
+          <template v-if="column.field === 'created_at'">
+            {{
+              new Date(data.created_at).toLocaleDateString("id-ID", {
+                hour12: false,
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+              })
+            }}
           </template>
           <template v-if="column.field === 'loyaltyPoints'">
             {{ data.loyaltyPoints }}
           </template>
           <template v-if="column.field === 'action'">
             <div class="flex gap-2 justify-center">
-              <TwButton
-                variant="primary"
-                class="border border-gray-900"
-                @click="
-                  toggleForm();
-                  getData(data);
-                "
-              >
+              <TwButton variant="primary" class="border border-gray-900" @click="
+                toggleForm();
+              getData(data);
+              ">
                 Edit
               </TwButton>
               <TwButton variant="danger" @click="toggleDialog(data)">
@@ -446,121 +439,66 @@ async function deleteLicense(index: any) {
       <h1 class="font-bold">
         {{
           currentData != undefined
-            ? `Update Data ${currentData.name}`
-            : "Tambah Data"
+          ? `Update Data ${currentData.name}`
+          : "Tambah Data"
         }}
       </h1>
-      <TwForm
-        :name="formName"
+      <TwForm :name="formName"
         class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
         :class="{
           'tw-shake': isError,
-        }"
-        :rules="formRules"
-        @submit="currentData != undefined ? updateCustomer() : addCustomer()"
-        :custom-field-name="{
-          inputName: 'Input',
-          inputEmail: 'Input',
-          inputPhone: 'Input',
-          inputPoint: 'Input',
-        }"
-      >
+        }" :rules="formRules" @submit="currentData != undefined ? updateCustomer() : addCustomer()" :custom-field-name="{
+  inputName: 'Input',
+  inputEmail: 'Input',
+  inputPhone: 'Input',
+  inputPoint: 'Input',
+}">
         <div class="col-span-12">
-          <TwInput
-            label="Name"
-            name="inputName"
-            v-model="formData.inputName"
-            placeholder="Input Name"
-            type="text"
-          />
+          <TwInput label="Name" name="inputName" v-model="formData.inputName" placeholder="Input Name" type="text" />
           <CustomErrorMessage name="inputName" />
         </div>
         <div class="col-span-12">
-          <TwInput
-            label="Email"
-            name="inputEmail"
-            v-model="formData.inputEmail"
-            placeholder="Input Email"
-            type="text"
-          />
+          <TwInput label="Email" name="inputEmail" v-model="formData.inputEmail" placeholder="Input Email" type="text" />
           <CustomErrorMessage name="inputEmail" />
         </div>
         <div class="col-span-12">
-          <TwInput
-            label="Phone"
-            name="inputPhone"
-            v-model="formData.inputPhone"
-            placeholder="Input Phone"
-            type="text"
-          />
+          <TwInput label="Phone" name="inputPhone" v-model="formData.inputPhone" placeholder="Input Phone" type="text" />
           <CustomErrorMessage name="inputPhone" />
         </div>
-        <div class="col-span-12">
-          <div
-            v-for="(input, index) in arrLicense.length"
-            class="input wrapper flex items-center"
-          >
+        <!-- <div class="col-span-12">
+          <div v-for="(input, index) in arrLicense.length" class="input wrapper flex items-center">
             <div>
-              <TwInput
-                :label="index <= 0 ? `License Plates` : ``"
-                name="inputLicense"
-                v-model="arrLicense[index]"
-                placeholder="Input License"
-                type="text"
-              />
+              <TwInput :label="index <= 0 ? `License Plates` : ``" name="inputLicense" v-model="arrLicense[index]"
+                placeholder="Input License" type="text" />
               <CustomErrorMessage name="inputLicense" />
             </div>
             <div v-if="arrLicense.length <= 1"></div>
             <div v-else class="input wrapper flex items-center">
-              <TwButton
-                variant="danger"
-                type="button"
-                @click="deleteLicense(index)"
-                class="border border-gray-900 bg-red-800"
-              >
+              <TwButton variant="danger" type="button" @click="deleteLicense(index)"
+                class="border border-gray-900 bg-red-800">
                 Delete
               </TwButton>
             </div>
           </div>
-          <TwButton
-            variant="primary"
-            type="button"
-            class="border border-gray-900 bg-gray-800 my-3"
-            @click="addLicense()"
-          >
+          <TwButton variant="primary" type="button" class="border border-gray-900 bg-gray-800 my-3" @click="addLicense()">
             Add License Plate
           </TwButton>
-        </div>
+        </div> -->
         <div class="col-span-12">
-          <TwInput
-            label="Loyalty Point"
-            name="inputPoint"
-            v-model="formData.inputPoint"
-            placeholder="Input Point"
-            type="number"
-          />
+          <TwInput label="Loyalty Point" name="inputPoint" v-model="formData.inputPoint" placeholder="Input Point"
+            type="number" />
           <CustomErrorMessage name="inputPoint" />
         </div>
         <div class="col-span-12 flex justify-end gap-1">
-          <TwButton
-            variant="primary"
-            type="button"
-            class="border border-gray-900"
-            @click="
-              clear();
-              toggleForm();
-              getData(undefined);
-            "
-          >
+          <TwButton variant="primary" type="button" class="border border-gray-900" @click="
+            clear();
+          toggleForm();
+          getData(undefined);
+          ">
             Close
           </TwButton>
-          <TwButton
-            ripple
-            variant="secondary"
-            type="button"
-            class="dark:text-gray-200 dark:!border-gray-800 dark:border"
-            @click="clear()"
-          >
+          <TwButton ripple variant="secondary" type="button" class="dark:text-gray-200 dark:!border-gray-800 dark:border"
+            @click="clear()">
             Reset
           </TwButton>
           <TwButton variant="primary"> Submit </TwButton>

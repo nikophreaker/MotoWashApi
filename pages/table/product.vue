@@ -18,9 +18,6 @@ import {
   useForm,
 } from "vue3-tailwind";
 
-definePageMeta({
-  middleware: "auth",
-});
 
 const datas = ref({
   column: [
@@ -33,6 +30,12 @@ const datas = ref({
     {
       label: "Description",
       field: "description",
+      width: "400px",
+      sortable: true,
+    },
+    {
+      label: "Category",
+      field: "categoryName",
       width: "400px",
       sortable: true,
     },
@@ -89,6 +92,11 @@ const datas = ref({
   },
 });
 var formShow = ref(false);
+type list = {
+  label: string;
+  value: string;
+};
+var categoryList = ref<list[]>([]);
 
 var bodyGet = new URLSearchParams();
 bodyGet.append("limit", datas.value.limit.toString());
@@ -104,6 +112,34 @@ function renameKey(obj: any, oldKey: any, newKey: any) {
   delete obj[oldKey];
 }
 
+async function getCategory() {
+  await fetch("/api/category", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: bodyGet,
+    redirect: "follow",
+  })
+    .then((res) => {
+      if (res != undefined) {
+        res.json().then((result) => {
+          categoryList.value = []
+          if (result.error == undefined) {
+            result.data.forEach((obj: any) => {
+              categoryList.value.push({
+                label: obj.name,
+                value: obj.id
+              })
+            })
+          }
+        });
+      } else {
+      }
+    })
+    .catch((err) => { });
+}
+
 async function getProduct() {
   await fetch("/api/product", {
     method: "POST",
@@ -117,15 +153,13 @@ async function getProduct() {
       if (res != undefined) {
         res.json().then((result) => {
           if (result.error == undefined) {
-            const finalResult = result;
-            finalResult.forEach((obj: any) => renameKey(obj, "_id", "id"));
-            datas.value.data = finalResult as Array<DatatableData>;
+            datas.value.data = result.data as Array<DatatableData>;
           }
         });
       } else {
       }
     })
-    .catch((err) => {});
+    .catch((err) => { });
 }
 
 async function addProduct() {
@@ -144,7 +178,8 @@ async function addProduct() {
   var bodyPatch = new URLSearchParams();
   bodyPatch.append("name", formData.inputName);
   bodyPatch.append("description", formData.textAreaDescription);
-  bodyPatch.append("stockQuantity", formData.inputStock);
+  bodyPatch.append("category_id", formData.selectCategory);
+  bodyPatch.append("stock", formData.inputStock);
   bodyPatch.append("price", formData.inputPrice);
   $fetch("/api/product/product", {
     method: "POST",
@@ -181,7 +216,8 @@ async function updateProduct() {
   bodyPatch.append("id", currentData.value.id);
   bodyPatch.append("name", formData.inputName);
   bodyPatch.append("description", formData.textAreaDescription);
-  bodyPatch.append("stockQuantity", formData.inputStock);
+  bodyPatch.append("category_id", formData.selectCategory);
+  bodyPatch.append("stock", formData.inputStock);
   bodyPatch.append("price", formData.inputPrice);
   $fetch("/api/product/product", {
     method: "PATCH",
@@ -227,6 +263,12 @@ function deleteProduct(id: any): Promise<Boolean> {
 }
 
 onMounted(async () => getProduct());
+
+onUpdated(async () => {
+  if (formShow.value) {
+    getCategory();
+  }
+})
 
 const composableForm = useForm();
 const dialog = useDialog();
@@ -285,6 +327,7 @@ const formData: {
   [key: string]: any;
 } = reactive({
   inputName: null,
+  selectCategory: null,
   inputStock: null,
   inputPrice: null,
   textAreaDescription: null,
@@ -292,6 +335,7 @@ const formData: {
 
 const formRules = {
   inputName: ["required", "string"],
+  selectCategory: ["required"],
   inputStock: ["required", "numeric"],
   inputPrice: ["required", "string"],
   textAreaDescription: [
@@ -308,6 +352,7 @@ const formRules = {
 
 function clear() {
   formData.inputName = null;
+  formData.selectCategory = null;
   formData.inputStock = null;
   formData.inputPrice = null;
   formData.textAreaDescription = null;
@@ -320,8 +365,9 @@ function getData(data: any) {
   currentData.value = data;
   if (data != undefined) {
     formData.inputName = data.name;
+    formData.selectCategory = data.categoryId;
     formData.textAreaDescription = data.description;
-    formData.inputStock = data.stockQuantity;
+    formData.inputStock = data.stock;
     formData.inputPrice = data.price;
   }
 }
@@ -354,27 +400,13 @@ function formatRupiah(angka: String, prefix: any) {
     <hr class="my-2 border dark:border-gray-700" />
     <div v-show="!formShow">
       <div class="col-span-12 flex justify-start gap-1">
-        <TwButton
-          variant="primary"
-          icon="plus-square"
-          class="border border-gray-900 my-2"
-          @click="toggleForm()"
-        >
+        <TwButton variant="primary" icon="plus-square" class="border border-gray-900 my-2" @click="toggleForm()">
           Add Data
         </TwButton>
       </div>
-      <TwDatatableClient
-        class="!dark:text-gray-200"
-        v-model:search="datas.search"
-        v-model:limit="datas.limit"
-        v-model:selected="datas.selected"
-        v-model:sort-by="datas.sortBy"
-        v-model:sort-type="datas.sortType"
-        :column="datas.column"
-        :data="datas.data"
-        :setting="datas.setting"
-        @datatable:column-hook="datatableHook"
-      >
+      <TwDatatableClient class="!dark:text-gray-200" v-model:search="datas.search" v-model:limit="datas.limit"
+        v-model:selected="datas.selected" v-model:sort-by="datas.sortBy" v-model:sort-type="datas.sortType"
+        :column="datas.column" :data="datas.data" :setting="datas.setting" @datatable:column-hook="datatableHook">
         <template #row="{ column, data }">
           <template v-if="column.field === 'name'">
             {{ data.name }}
@@ -382,22 +414,21 @@ function formatRupiah(angka: String, prefix: any) {
           <template v-if="column.field === 'description'">
             {{ data.description }}
           </template>
+          <template v-if="column.field === 'category'">
+            {{ data.categoryName }}
+          </template>
           <template v-if="column.field === 'stock'">
-            {{ Number(data.stockQuantity) }}
+            {{ Number(data.stock) }}
           </template>
           <template v-if="column.field === 'price'">
             {{ formatRupiah(data.price.toString(), "Rp. ") }}
           </template>
           <template v-if="column.field === 'action'">
             <div class="flex gap-2 justify-center">
-              <TwButton
-                variant="primary"
-                class="border border-gray-900"
-                @click="
-                  toggleForm();
-                  getData(data);
-                "
-              >
+              <TwButton variant="primary" class="border border-gray-900" @click="
+                toggleForm();
+              getData(data);
+              ">
                 Edit
               </TwButton>
               <TwButton variant="danger" @click="toggleDialog(data)">
@@ -434,85 +465,53 @@ function formatRupiah(angka: String, prefix: any) {
       <h1 class="font-bold">
         {{
           currentData != undefined
-            ? `Update Data ${currentData.name}`
-            : "Tambah Data"
+          ? `Update Data ${currentData.name}`
+          : "Tambah Data"
         }}
       </h1>
-      <TwForm
-        :name="formName"
+      <TwForm :name="formName"
         class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
         :class="{
           'tw-shake': isError,
-        }"
-        :rules="formRules"
-        @submit="currentData != undefined ? updateProduct() : addProduct()"
-        :custom-field-name="{
-          inputName: 'Input',
-          textAreaExample: 'Text Area',
-          inputStock: 'Input',
-          inputPrice: 'Input',
-        }"
-      >
+        }" :rules="formRules" @submit="currentData != undefined ? updateProduct() : addProduct()" :custom-field-name="{
+  inputName: 'Input',
+  textAreaExample: 'Text Area',
+  inputStock: 'Input',
+  inputPrice: 'Input',
+}">
         <div class="col-span-12">
-          <TwInput
-            label="Name"
-            name="inputName"
-            v-model="formData.inputName"
-            placeholder="Input Name"
-            type="text"
-          />
+          <TwInput label="Name" name="inputName" v-model="formData.inputName" placeholder="Input Name" type="text" />
           <CustomErrorMessage name="inputName" />
         </div>
         <div class="col-span-12">
-          <TwTextarea
-            label="Description"
-            name="textAreaDescription"
-            v-model="formData.textAreaDescription"
-            placeholder="Description"
-            type="text"
-          />
+          <TwTextarea label="Description" name="textAreaDescription" v-model="formData.textAreaDescription"
+            placeholder="Description" type="text" />
           <CustomErrorMessage name="textAreaDescription" />
         </div>
         <div class="col-span-12">
-          <TwInput
-            label="Stock"
-            name="inputStock"
-            v-model="formData.inputStock"
-            placeholder="Input Stock"
-            type="number"
-          />
+          <TwSelect label="Category" name="selectCategory" v-model="formData.selectCategory" :items="categoryList"
+            placeholder="Choose Category" />
+          <CustomErrorMessage name="selectCategory" />
+        </div>
+        <div class="col-span-12">
+          <TwInput label="Stock" name="inputStock" v-model="formData.inputStock" placeholder="Input Stock"
+            type="number" />
           <CustomErrorMessage name="inputStock" />
         </div>
         <div class="col-span-12">
-          <TwInput
-            label="Price"
-            name="inputPrice"
-            v-model="formData.inputPrice"
-            placeholder="Input Price"
-            type="text"
-          />
+          <TwInput label="Price" name="inputPrice" v-model="formData.inputPrice" placeholder="Input Price" type="text" />
           <CustomErrorMessage name="inputPrice" />
         </div>
         <div class="col-span-12 flex justify-end gap-1">
-          <TwButton
-            variant="primary"
-            type="button"
-            class="border border-gray-900"
-            @click="
-              clear();
-              toggleForm();
-              getData(undefined);
-            "
-          >
+          <TwButton variant="primary" type="button" class="border border-gray-900" @click="
+            clear();
+          toggleForm();
+          getData(undefined);
+          ">
             Close
           </TwButton>
-          <TwButton
-            ripple
-            variant="secondary"
-            type="button"
-            class="dark:text-gray-200 dark:!border-gray-800 dark:border"
-            @click="clear()"
-          >
+          <TwButton ripple variant="secondary" type="button" class="dark:text-gray-200 dark:!border-gray-800 dark:border"
+            @click="clear()">
             Reset
           </TwButton>
           <TwButton variant="primary"> Submit </TwButton>
