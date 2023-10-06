@@ -11,14 +11,20 @@ export default defineEventHandler(async (event) => {
             $regex: query,
             $options: "i",
           },
+        },
+        {
           email: {
             $regex: query,
             $options: "i",
           },
+        },
+        {
           phone: {
             $regex: query,
             $options: "i",
           },
+        },
+        {
           licensePlates: {
             $regex: query,
             $options: "i",
@@ -135,10 +141,10 @@ export default defineEventHandler(async (event) => {
 
     return result;
   } catch (error) {
-    return {
-      status: 500,
-      error: error,
-      message: "Harap coba kembali",
-    };
+    return createError({
+      statusCode: 500,
+      data: error,
+      statusMessage: "Harap coba kembali",
+    });
   }
 });

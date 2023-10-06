@@ -11,14 +11,20 @@ export default defineEventHandler(async (event) => {
             $regex: query,
             $options: "i",
           },
+        },
+        {
           email: {
             $regex: query,
             $options: "i",
           },
+        },
+        {
           phone: {
             $regex: query,
             $options: "i",
           },
+        },
+        {
           role: {
             $regex: query,
             $options: "i",

@@ -12,4 +12,4 @@ export default defineNuxtRouteMiddleware((to, from) => {
   if (!isAuthenticatedAdmin() === true) {
     return navigateTo("/login");
   }
-})
+});
