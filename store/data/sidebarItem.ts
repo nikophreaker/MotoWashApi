@@ -163,8 +163,8 @@ export default [
       },
       {
         isTitle: false,
-        name: "Datatable Clientside",
-        url: "/table/simple",
+        name: "Discount",
+        url: "/table/discount",
         icon: "chevron-right",
         submenu: [],
       },

@@ -1,48 +1,65 @@
-import { Transaction } from "~/models/transactions";
+import { sql } from '../../db/dbconnection'
 
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
+    const arrItem: Array<String> = body.productId.split(',')
+    const orderData = {
+      customer_id: body.customerId,
+      total_amount: body.totalAmount,
+    };
 
-    const result = new Transaction({
-      userId: body.userId,
-      productId: body.productId.split(","),
-      transactionDate: new Date(body.transactionDate),
-      totalAmount: body.totalAmount,
-      paymentMethod: body.paymentMethod,
-      paymentStatus: body.paymentStatus,
-    });
-    // Admin.createIndexes();
-    try {
-      return (await result.save()).errors != undefined
-        ? createError({
-            statusCode: 500,
-            data: (await result.save()).errors,
-            statusMessage: "Harap coba kembali",
+    return await sql({
+      query: `INSERT INTO orders SET ?`,
+      values: orderData
+    }).then(async (resOrder: any) => {
+
+      const transactionData = {
+        customer_id: body.customerId,
+        orders_id: resOrder[0].insertId,
+        payment_method: body.paymentMethod,
+        payment_status: body.paymentStatus,
+      };
+
+      return await sql({
+        query: `INSERT INTO transaction SET ?`,
+        values: transactionData
+      }).then(async (resTransaction: any) => {
+
+        const insertedItemIds: any[] = [];
+        arrItem.forEach(async (el, idx) => {
+
+          const itemsData = {
+            orders_id: resTransaction[0].insertId,
+            product_id: body.productId.split(',')[idx],
+            quantity: body.quantity.split(',')[idx],
+            price: body.price.split(',')[idx],
+          };
+
+          await sql({
+            query: `INSERT INTO order_items SET ?`,
+            values: itemsData
+          }).then((resItem: any) => {
+            insertedItemIds.push(resItem[0])
+          }).catch((error) => {
+            if (error) throw error;
           })
-        : result.save();
-    } catch (error: any) {
-      if (error.keyValue != undefined) {
-        return createError({
-          statusCode: 402,
-          data: error.keyValue,
-          statusMessage: `${Object.keys(error.keyValue)} ${Object.values(
-            error.keyValue
-          )} sudah terdaftar`,
-        });
-      } else {
-        return createError({
-          statusCode: 500,
-          data: error.errors,
-          statusMessage: `${Object.values(error.errors)}`,
-        });
-      }
-    }
-  } catch (error) {
+        })
+        return {
+          statusCode: 200,
+          data: insertedItemIds,
+        }
+      }).catch((error) => {
+        if (error) throw error;
+      })
+    }).catch((error) => {
+      if (error) throw error;
+    })
+  } catch (error: any) {
     return createError({
       statusCode: 500,
       data: error,
-      statusMessage: "Harap coba kembali",
+      statusMessage: `${error.message}`,
     });
   }
 });

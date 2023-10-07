@@ -1,15 +1,18 @@
-import mysql from 'mysql2/promise'
+import { sql } from '../../db/dbconnection'
 
 export default defineEventHandler(async (event) => {
   try {
-    const config = useRuntimeConfig();
-    const con = await mysql.createConnection(config.mysql);
     const body = await readBody(event);
-    const [data, fields] = await con.query(`INSERT INTO category (name) VALUES ('${body.name}')`);
-    return {
-      statusCode: 200,
-      data: data,
-    };
+    return await sql({
+      query: `INSERT INTO category (name) VALUES ('${body.name}')`
+    }).then((res: any) => {
+      return {
+        statusCode: 200,
+        data: res[0],
+      }
+    }).catch((error) => {
+      if (error) throw error;
+    })
   } catch (error: any) {
     return createError({
       statusCode: 500,

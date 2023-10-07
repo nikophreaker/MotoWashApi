@@ -12,8 +12,10 @@ export default defineNuxtConfig({
       host: process.env.HOST,
       user: process.env.DBUSERNAME,
       password: process.env.DBPASSWORD,
-      database: process.env.DBNAME
-    }
+      database: process.env.DBNAME,
+      connectionLimit: 10,
+    },
+    secretKey: process.env.SECRET_TOKEN
   },
   build: {
     transpile: ["@vuepic/vue-datepicker"],

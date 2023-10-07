@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
     return await sql({
-      query: `INSERT INTO product (name, description, category_id, stock, price) VALUES ('${body.name}','${body.description}','${body.category_id}','${body.stock}','${body.price}')`
+      query: `UPDATE discounts SET code = '${body.code}', description = '${body.description}', type = '${body.type}', value = '${body.value}', start_date = '${body.startDate}', end_date = '${body.endDate}' WHERE id = ${body.id}`
     }).then((res: any) => {
       return {
         statusCode: 200,
@@ -13,11 +13,12 @@ export default defineEventHandler(async (event) => {
     }).catch((error) => {
       if (error) throw error;
     })
-  } catch (error: any) {
+  } catch (error) {
+    console.log(error);
     return createError({
       statusCode: 500,
       data: error,
-      statusMessage: `${error.message}`,
+      statusMessage: "Harap coba kembali",
     });
   }
 });

@@ -1,10 +1,18 @@
-import { Transaction } from "~/models/transactions";
+import { sql } from '../../db/dbconnection'
 
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
-    const result = await Transaction.findOneAndDelete({ _id: body.id });
-    return result;
+    return await sql({
+      query: `DELETE FROM transaction WHERE id = ${body.id}`
+    }).then((res: any) => {
+      return {
+        statusCode: 200,
+        data: res[0],
+      }
+    }).catch((error) => {
+      if (error) throw error;
+    })
   } catch (error) {
     return createError({
       statusCode: 500,

@@ -17,13 +17,45 @@ import {
   TwTextarea,
   useForm,
 } from "vue3-tailwind";
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
 
 
 const datas = ref({
   column: [
     {
-      label: "Name",
-      field: "name",
+      label: "Code",
+      field: "code",
+      width: "400px",
+      sortable: true,
+    },
+    {
+      label: "Description",
+      field: "description",
+      width: "400px",
+      sortable: true,
+    },
+    {
+      label: "Type",
+      field: "type",
+      width: "400px",
+      sortable: true,
+    },
+    {
+      label: "Value",
+      field: "value",
+      width: "400px",
+      sortable: true,
+    },
+    {
+      label: "Start",
+      field: "start_date",
+      width: "400px",
+      sortable: true,
+    },
+    {
+      label: "End",
+      field: "end_date",
       width: "400px",
       sortable: true,
     },
@@ -78,13 +110,8 @@ const datatableHook = (arg: any) => {
   arg();
 };
 
-function renameKey(obj: any, oldKey: any, newKey: any) {
-  obj[newKey] = obj[oldKey];
-  delete obj[oldKey];
-}
-
-async function getCategory() {
-  await fetch("/api/category", {
+async function getDiscount() {
+  await fetch("/api/discount", {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -105,7 +132,7 @@ async function getCategory() {
     .catch((err) => { });
 }
 
-async function addCategory() {
+async function addDiscount() {
   validator.value.clearErrors();
   await validator.value.validate();
   if (validator.value.fail()) {
@@ -119,8 +146,13 @@ async function addCategory() {
     return;
   }
   var bodyPatch = new URLSearchParams();
-  bodyPatch.append("name", formData.inputName);
-  $fetch("/api/category/category", {
+  bodyPatch.append("code", formData.inputCode);
+  bodyPatch.append("description", formData.textAreaDescription);
+  bodyPatch.append("type", formData.inputType);
+  bodyPatch.append("value", formData.inputValue);
+  bodyPatch.append("startDate", new Date(formData.inputStartDate).toISOString().replace('Z', ' ').replace('T', ' ').replace('.000', ''));
+  bodyPatch.append("endDate", new Date(formData.inputEndDate).toISOString().replace('Z', ' ').replace('T', ' ').replace('.000', ''));
+  $fetch("/api/discount/discount", {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -138,7 +170,7 @@ async function addCategory() {
     });
 }
 
-async function updateCategory() {
+async function updateDiscount() {
   validator.value.clearErrors();
   await validator.value.validate();
   if (validator.value.fail()) {
@@ -153,8 +185,13 @@ async function updateCategory() {
   }
   var bodyPatch = new URLSearchParams();
   bodyPatch.append("id", currentData.value.id);
-  bodyPatch.append("name", formData.inputName);
-  $fetch("/api/category/category", {
+  bodyPatch.append("code", formData.inputCode);
+  bodyPatch.append("description", formData.textAreaDescription);
+  bodyPatch.append("type", formData.inputType);
+  bodyPatch.append("value", formData.inputValue);
+  bodyPatch.append("startDate", new Date(formData.inputStartDate).toISOString().replace('Z', ' ').replace('T', ' ').replace('.000', ''));
+  bodyPatch.append("endDate", new Date(formData.inputEndDate).toISOString().replace('Z', ' ').replace('T', ' ').replace('.000', ''));
+  $fetch("/api/discount/discount", {
     method: "PATCH",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -172,10 +209,10 @@ async function updateCategory() {
     });
 }
 
-function deleteCategory(id: any): Promise<Boolean> {
+function deleteDiscount(id: any): Promise<Boolean> {
   var bodyDelete = new URLSearchParams();
   bodyDelete.append("id", id);
-  const deleted = $fetch("/api/category/category", {
+  const deleted = $fetch("/api/discount/discount", {
     method: "DELETE",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -185,7 +222,7 @@ function deleteCategory(id: any): Promise<Boolean> {
   })
     .then((res) => {
       if (res != undefined) {
-        getCategory();
+        getDiscount();
         return true;
       } else {
         return false;
@@ -197,7 +234,7 @@ function deleteCategory(id: any): Promise<Boolean> {
   return deleted;
 }
 
-onMounted(async () => getCategory());
+onMounted(async () => getDiscount());
 
 const composableForm = useForm();
 const dialog = useDialog();
@@ -214,7 +251,7 @@ async function toggleDialog(data: any) {
     if (!isConfirmed) {
       return;
     }
-    deleteCategory(data.id).then((deleted) => {
+    deleteProduct(data.id).then((deleted) => {
       if (deleted) {
         toast.success({
           message: `Success Delete ${data.name}`,
@@ -229,7 +266,7 @@ async function toggleDialog(data: any) {
 }
 
 //Form Setup
-const formName = "formCategory";
+const formName = "formDiscount";
 const isError = ref(false);
 const form = computed(() => composableForm.getForm(formName));
 const validator = computed(() => form.value.validator);
@@ -247,7 +284,7 @@ async function submit(data: any) {
   } else {
     getData(undefined);
     toggleForm();
-    getCategory();
+    getDiscount();
     clear();
   }
 }
@@ -255,15 +292,39 @@ async function submit(data: any) {
 const formData: {
   [key: string]: any;
 } = reactive({
-  inputName: null,
+  inputCode: null,
+  inputType: null,
+  inputValue: null,
+  textAreaDescription: null,
+  inputStartDate: null,
+  inputEndDate: null,
 });
 
 const formRules = {
-  inputName: ["required", "string"],
+  inputCode: ["required", "string"],
+  inputValue: ["required", "numeric"],
+  inputType: ["required", "string"],
+  // inputStartDate: ["required"],
+  // inputEndDate: ["required"],
+  textAreaDescription: [
+    "required",
+    "string",
+    (value: string) => {
+      const MIN_LENGTH = 15;
+      if (!value || value.length < MIN_LENGTH) {
+        return `Min length is ${MIN_LENGTH}, current length is ${value.length}`;
+      }
+    },
+  ],
 };
 
 function clear() {
-  formData.inputName = null;
+  formData.inputCode= null,
+  formData.inputType= null,
+  formData.inputValue= null,
+  formData.textAreaDescription= null,
+  formData.inputStartDate= null,
+  formData.inputEndDate= null,
 
   validator.value.clearErrors();
 }
@@ -272,7 +333,12 @@ var currentData = ref();
 function getData(data: any) {
   currentData.value = data;
   if (data != undefined) {
-    formData.inputName = data.name;
+    formData.inputCode = data.code,
+    formData.inputType = data.type,
+    formData.inputValue = Number(data.value),
+    formData.textAreaDescription = data.description,
+    formData.inputStartDate = data.start_date,
+    formData.inputEndDate = data.end_date
   }
 }
 
@@ -281,11 +347,36 @@ function toggleForm() {
   formShow.value = !formShow.value;
 }
 
+function formatRupiah(angka: String, prefix: any) {
+  var number_string = angka.replace(/[^,\d]/g, "").toString(),
+    split = number_string.split(","),
+    sisa = split[0].length % 3,
+    rupiah = split[0].substr(0, sisa),
+    ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+  if (ribuan) {
+    var separator = sisa ? "." : "";
+    rupiah += separator + ribuan.join(".");
+  }
+
+  rupiah = split[1] != undefined ? rupiah + "," + split[1] : rupiah;
+  return prefix == undefined ? rupiah : rupiah ? "Rp. " + rupiah : "";
+}
+
+
+// watch(formData, (value) => {
+//   if (value.inputStartDate != undefined && value.inputStartDate != null) {
+//     formData.inputStartDate = value.inputStartDate.toString();
+//   }
+//   if (value.inputEndDate != undefined && value.inputEndDate != null) {
+//     formData.inputEndDate = value.inputEndDate.toString();
+//   }
+// });
 </script>
 
 <template>
   <div>
-    <h2 class="text-2xl font-bold">Datatable Category</h2>
+    <h2 class="text-2xl font-bold">Datatable Discount</h2>
     <hr class="my-2 border dark:border-gray-700" />
     <div v-show="!formShow">
       <div class="col-span-12 flex justify-start gap-1">
@@ -297,8 +388,45 @@ function toggleForm() {
         v-model:selected="datas.selected" v-model:sort-by="datas.sortBy" v-model:sort-type="datas.sortType"
         :column="datas.column" :data="datas.data" :setting="datas.setting" @datatable:column-hook="datatableHook">
         <template #row="{ column, data }">
-          <template v-if="column.field === 'name'">
-            {{ data.name }}
+          <template v-if="column.field === 'code'">
+            {{ data.code }}
+          </template>
+          <template v-if="column.field === 'description'">
+            {{ data.description }}
+          </template>
+          <template v-if="column.field === 'type'">
+            {{ data.type }}
+          </template>
+          <template v-if="column.field === 'value'">
+            {{ Number(data.value) }}
+          </template>
+          <template v-if="column.field === 'start_date'">
+            {{
+              new Date(data.start_date).toLocaleDateString("id-ID", {
+                hour12: false,
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+              })
+            }}
+          </template>
+          <template v-if="column.field === 'end_date'">
+            {{
+              new Date(data.end_date).toLocaleDateString("id-ID", {
+                hour12: false,
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+              })
+            }}
           </template>
           <template v-if="column.field === 'action'">
             <div class="flex gap-2 justify-center">
@@ -350,11 +478,43 @@ function toggleForm() {
         class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
         :class="{
           'tw-shake': isError,
-        }" :rules="formRules" @submit="currentData != undefined ? updateCategory() : addCategory()"
-        :custom-field-name="{ inputName: 'Input' }">
+        }" :rules="formRules" @submit="currentData != undefined ? updateDiscount() : addDiscount()" :custom-field-name="{
+  inputCode: 'Input',
+  textAreaDescription: 'Text Area',
+  inputType: 'Input',
+  inputValue: 'Input',
+}">
         <div class="col-span-12">
-          <TwInput label="Name" name="inputName" v-model="formData.inputName" placeholder="Input Name" type="text" />
-          <CustomErrorMessage name="inputName" />
+          <TwInput label="Code" name="inputCode" v-model="formData.inputCode" placeholder="Input Code" type="text" />
+          <CustomErrorMessage name="inputCode" />
+        </div>
+        <div class="col-span-12">
+          <TwTextarea label="Description" name="textAreaDescription" v-model="formData.textAreaDescription"
+            placeholder="Description" type="text" />
+          <CustomErrorMessage name="textAreaDescription" />
+        </div>
+        <div class="col-span-12">
+          <TwInput label="Type" name="inputType" v-model="formData.inputType" placeholder="Input Type" type="text" />
+          <CustomErrorMessage name="inputType" />
+        </div>
+        <div class="col-span-12">
+          <TwInput label="Value" name="inputValue" v-model="formData.inputValue" placeholder="Input Value"
+            type="number" />
+          <CustomErrorMessage name="inputValue" />
+        </div>
+        <div class="col-span-12">
+          <!-- <TwInput label="Start Date" name="inputStartDate" v-model="formData.inputStartDate" placeholder="Start Date"
+            type="text" disabled /> -->
+          <VueDatePicker class="dp" label="Start Date" name="inputStartDate" v-model="formData.inputStartDate"
+            placeholder="Start Date" type="text" />
+          <CustomErrorMessage name="inputStartDate" />
+        </div>
+        <div class="col-span-12">
+          <!-- <TwInput label="End Date" name="inputEndDate" v-model="formData.inputEndDate" placeholder="End Date"
+            type="text" disabled /> -->
+          <VueDatePicker class="dp" label="End Date" name="inputEndDate" v-model="formData.inputEndDate"
+            placeholder="End Date" type="text" />
+          <CustomErrorMessage name="inputEndDate" />
         </div>
         <div class="col-span-12 flex justify-end gap-1">
           <TwButton variant="primary" type="button" class="border border-gray-900" @click="

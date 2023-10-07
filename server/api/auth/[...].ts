@@ -5,7 +5,7 @@ import mysql from 'mysql2/promise'
 
 export default NuxtAuthHandler({
   // A secret string you define, to ensure correct encryption
-  secret: 'your-secret-here',
+  secret: useRuntimeConfig().secretKey,
   pages: {
     signIn: "/login"
   },
@@ -19,8 +19,8 @@ export default NuxtAuthHandler({
       // e.g. domain, username, password, 2FA token, etc.
       // You can pass any HTML attribute to the <input> tag through the object.
       credentials: {
-        email: { label: 'Email', type: 'text', placeholder: '(hint: admin@gmail.com)' },
-        password: { label: 'Password', type: 'password', placeholder: '(hint: admin)' }
+        email: { label: 'Email', type: 'text', placeholder: '(hint: email)' },
+        password: { label: 'Password', type: 'password', placeholder: '(hint: password)' }
       },
       async authorize(credentials: any) {
         // You need to provide your own logic here that takes the credentials
@@ -34,11 +34,9 @@ export default NuxtAuthHandler({
           if ((data as []).length != 0) {
             return data
           } else {
-            console.error('Warning: Malicious login attempt registered, bad credentials provided')
             return false
           }
         } catch (error) {
-          console.error('Warning: Malicious login attempt registered, bad credentials provided')
           return false
         }
       }

@@ -1,15 +1,19 @@
-import mysql from 'mysql2/promise'
+import { sql } from '../../db/dbconnection'
 
 export default defineEventHandler(async (event) => {
   try {
-    const config = useRuntimeConfig();
-    const con = await mysql.createConnection(config.mysql);
     const body = await readBody(event);
-    const [data, fields] = await con.query(`DELETE FROM admin WHERE id = ${body.id}`);
-    return {
-      statusCode: 200,
-      data: data,
-    };
+    return await sql({
+      query: `DELETE FROM admin WHERE id = ${body.id}`
+    }).then((res: any) => {
+      res.con.release()
+      return {
+        statusCode: 200,
+        data: res.cq[0],
+      }
+    }).catch((error) => {
+      if (error) throw error;
+    })
   } catch (error) {
     return createError({
       statusCode: 500,

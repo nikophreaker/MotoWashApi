@@ -3,12 +3,14 @@ import { sql } from '../../db/dbconnection'
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
+    let query = body ? body.query : "";
     return await sql({
-      query: `INSERT INTO product (name, description, category_id, stock, price) VALUES ('${body.name}','${body.description}','${body.category_id}','${body.stock}','${body.price}')`
+      query: `SELECT * FROM discounts WHERE code LIKE '%${query}%' OR description LIKE '%${query}%' OR type LIKE '%${query}%' OR value LIKE '%${query}%'`
     }).then((res: any) => {
+      res.con.release()
       return {
         statusCode: 200,
-        data: res[0],
+        data: res.cq[0],
       }
     }).catch((error) => {
       if (error) throw error;

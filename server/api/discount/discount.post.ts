@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
     return await sql({
-      query: `INSERT INTO product (name, description, category_id, stock, price) VALUES ('${body.name}','${body.description}','${body.category_id}','${body.stock}','${body.price}')`
+      query: `INSERT INTO discounts (code, description, type, value, start_date, end_date) VALUES ('${body.code}','${body.description}','${body.type}','${body.value}','${body.startDate}','${body.endDate}')`
     }).then((res: any) => {
       return {
         statusCode: 200,
