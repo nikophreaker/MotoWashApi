@@ -1,0 +1,1 @@
+import{u as o}from"./vue.f36acd1f.e41c4820.js";import{f as t,o as s,c as r,a as e}from"./entry.9bb287b3.js";const a=e("h1",{class:"text-3xl font-bold"}," Profile ",-1),n=e("hr",{class:"my-2 border dark:border-gray-700"},null,-1),c=[a,n],m=t({__name:"index",setup(l){return o({title:"Profile"}),(_,d)=>(s(),r("div",null,c))}});export{m as default};
