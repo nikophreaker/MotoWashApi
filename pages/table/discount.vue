@@ -20,7 +20,6 @@ import {
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 
-
 const datas = ref({
   column: [
     {
@@ -129,7 +128,7 @@ async function getDiscount() {
       } else {
       }
     })
-    .catch((err) => { });
+    .catch((err) => {});
 }
 
 async function addDiscount() {
@@ -150,8 +149,22 @@ async function addDiscount() {
   bodyPatch.append("description", formData.textAreaDescription);
   bodyPatch.append("type", formData.inputType);
   bodyPatch.append("value", formData.inputValue);
-  bodyPatch.append("startDate", new Date(formData.inputStartDate).toISOString().replace('Z', ' ').replace('T', ' ').replace('.000', ''));
-  bodyPatch.append("endDate", new Date(formData.inputEndDate).toISOString().replace('Z', ' ').replace('T', ' ').replace('.000', ''));
+  bodyPatch.append(
+    "startDate",
+    new Date(formData.inputStartDate)
+      .toISOString()
+      .replace("Z", " ")
+      .replace("T", " ")
+      .replace(".000", "")
+  );
+  bodyPatch.append(
+    "endDate",
+    new Date(formData.inputEndDate)
+      .toISOString()
+      .replace("Z", " ")
+      .replace("T", " ")
+      .replace(".000", "")
+  );
   $fetch("/api/discount/discount", {
     method: "POST",
     headers: {
@@ -189,8 +202,22 @@ async function updateDiscount() {
   bodyPatch.append("description", formData.textAreaDescription);
   bodyPatch.append("type", formData.inputType);
   bodyPatch.append("value", formData.inputValue);
-  bodyPatch.append("startDate", new Date(formData.inputStartDate).toISOString().replace('Z', ' ').replace('T', ' ').replace('.000', ''));
-  bodyPatch.append("endDate", new Date(formData.inputEndDate).toISOString().replace('Z', ' ').replace('T', ' ').replace('.000', ''));
+  bodyPatch.append(
+    "startDate",
+    new Date(formData.inputStartDate)
+      .toISOString()
+      .replace("Z", " ")
+      .replace("T", " ")
+      .replace(".000", "")
+  );
+  bodyPatch.append(
+    "endDate",
+    new Date(formData.inputEndDate)
+      .toISOString()
+      .replace("Z", " ")
+      .replace("T", " ")
+      .replace(".000", "")
+  );
   $fetch("/api/discount/discount", {
     method: "PATCH",
     headers: {
@@ -319,26 +346,25 @@ const formRules = {
 };
 
 function clear() {
-  formData.inputCode= null,
-  formData.inputType= null,
-  formData.inputValue= null,
-  formData.textAreaDescription= null,
-  formData.inputStartDate= null,
-  formData.inputEndDate= null,
-
-  validator.value.clearErrors();
+  (formData.inputCode = null),
+    (formData.inputType = null),
+    (formData.inputValue = null),
+    (formData.textAreaDescription = null),
+    (formData.inputStartDate = null),
+    (formData.inputEndDate = null),
+    validator.value.clearErrors();
 }
 
 var currentData = ref();
 function getData(data: any) {
   currentData.value = data;
   if (data != undefined) {
-    formData.inputCode = data.code,
-    formData.inputType = data.type,
-    formData.inputValue = Number(data.value),
-    formData.textAreaDescription = data.description,
-    formData.inputStartDate = data.start_date,
-    formData.inputEndDate = data.end_date
+    (formData.inputCode = data.code),
+      (formData.inputType = data.type),
+      (formData.inputValue = Number(data.value)),
+      (formData.textAreaDescription = data.description),
+      (formData.inputStartDate = data.start_date),
+      (formData.inputEndDate = data.end_date);
   }
 }
 
@@ -363,7 +389,6 @@ function formatRupiah(angka: String, prefix: any) {
   return prefix == undefined ? rupiah : rupiah ? "Rp. " + rupiah : "";
 }
 
-
 // watch(formData, (value) => {
 //   if (value.inputStartDate != undefined && value.inputStartDate != null) {
 //     formData.inputStartDate = value.inputStartDate.toString();
@@ -380,13 +405,27 @@ function formatRupiah(angka: String, prefix: any) {
     <hr class="my-2 border dark:border-gray-700" />
     <div v-show="!formShow">
       <div class="col-span-12 flex justify-start gap-1">
-        <TwButton variant="primary" icon="plus-square" class="border border-gray-900 my-2" @click="toggleForm()">
+        <TwButton
+          variant="primary"
+          icon="plus-square"
+          class="border border-gray-900 my-2"
+          @click="toggleForm()"
+        >
           Add Data
         </TwButton>
       </div>
-      <TwDatatableClient class="!dark:text-gray-200" v-model:search="datas.search" v-model:limit="datas.limit"
-        v-model:selected="datas.selected" v-model:sort-by="datas.sortBy" v-model:sort-type="datas.sortType"
-        :column="datas.column" :data="datas.data" :setting="datas.setting" @datatable:column-hook="datatableHook">
+      <TwDatatableClient
+        class="!dark:text-gray-200"
+        v-model:search="datas.search"
+        v-model:limit="datas.limit"
+        v-model:selected="datas.selected"
+        v-model:sort-by="datas.sortBy"
+        v-model:sort-type="datas.sortType"
+        :column="datas.column"
+        :data="datas.data"
+        :setting="datas.setting"
+        @datatable:column-hook="datatableHook"
+      >
         <template #row="{ column, data }">
           <template v-if="column.field === 'code'">
             {{ data.code }}
@@ -430,15 +469,17 @@ function formatRupiah(angka: String, prefix: any) {
           </template>
           <template v-if="column.field === 'action'">
             <div class="flex gap-2 justify-center">
-              <TwButton variant="primary" class="border border-gray-900" @click="
-                toggleForm();
-              getData(data);
-              ">
+              <TwButton
+                variant="primary"
+                class="border border-gray-900"
+                @click="
+                  toggleForm();
+                  getData(data);
+                "
+              >
                 Edit
               </TwButton>
-              <TwButton variant="danger" @click="toggleDialog(data)">
-                Delete
-              </TwButton>
+              <TwButton variant="danger" @click="toggleDialog(data)"> Delete </TwButton>
             </div>
           </template>
         </template>
@@ -468,64 +509,109 @@ function formatRupiah(angka: String, prefix: any) {
     </div>
     <div v-show="formShow">
       <h1 class="font-bold">
-        {{
-          currentData != undefined
-          ? `Update Data ${currentData.name}`
-          : "Tambah Data"
-        }}
+        {{ currentData != undefined ? `Update Data ${currentData.name}` : "Tambah Data" }}
       </h1>
-      <TwForm :name="formName"
+      <TwForm
+        :name="formName"
         class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
         :class="{
           'tw-shake': isError,
-        }" :rules="formRules" @submit="currentData != undefined ? updateDiscount() : addDiscount()" :custom-field-name="{
-  inputCode: 'Input',
-  textAreaDescription: 'Text Area',
-  inputType: 'Input',
-  inputValue: 'Input',
-}">
+        }"
+        :rules="formRules"
+        @submit="currentData != undefined ? updateDiscount() : addDiscount()"
+        :custom-field-name="{
+          inputCode: 'Input',
+          textAreaDescription: 'Text Area',
+          inputType: 'Input',
+          inputValue: 'Input',
+        }"
+      >
         <div class="col-span-12">
-          <TwInput label="Code" name="inputCode" v-model="formData.inputCode" placeholder="Input Code" type="text" />
+          <TwInput
+            label="Code"
+            name="inputCode"
+            v-model="formData.inputCode"
+            placeholder="Input Code"
+            type="text"
+          />
           <CustomErrorMessage name="inputCode" />
         </div>
         <div class="col-span-12">
-          <TwTextarea label="Description" name="textAreaDescription" v-model="formData.textAreaDescription"
-            placeholder="Description" type="text" />
+          <TwTextarea
+            label="Description"
+            name="textAreaDescription"
+            v-model="formData.textAreaDescription"
+            placeholder="Description"
+            type="text"
+          />
           <CustomErrorMessage name="textAreaDescription" />
         </div>
         <div class="col-span-12">
-          <TwInput label="Type" name="inputType" v-model="formData.inputType" placeholder="Input Type" type="text" />
+          <TwInput
+            label="Type"
+            name="inputType"
+            v-model="formData.inputType"
+            placeholder="Input Type"
+            type="text"
+          />
           <CustomErrorMessage name="inputType" />
         </div>
         <div class="col-span-12">
-          <TwInput label="Value" name="inputValue" v-model="formData.inputValue" placeholder="Input Value"
-            type="number" />
+          <TwInput
+            label="Value"
+            name="inputValue"
+            v-model="formData.inputValue"
+            placeholder="Input Value"
+            type="number"
+          />
           <CustomErrorMessage name="inputValue" />
         </div>
         <div class="col-span-12">
           <!-- <TwInput label="Start Date" name="inputStartDate" v-model="formData.inputStartDate" placeholder="Start Date"
             type="text" disabled /> -->
-          <VueDatePicker class="dp" label="Start Date" name="inputStartDate" v-model="formData.inputStartDate"
-            placeholder="Start Date" type="text" />
+          <VueDatePicker
+            class="dp"
+            label="Start Date"
+            name="inputStartDate"
+            v-model="formData.inputStartDate"
+            placeholder="Start Date"
+            type="text"
+          />
           <CustomErrorMessage name="inputStartDate" />
         </div>
         <div class="col-span-12">
           <!-- <TwInput label="End Date" name="inputEndDate" v-model="formData.inputEndDate" placeholder="End Date"
             type="text" disabled /> -->
-          <VueDatePicker class="dp" label="End Date" name="inputEndDate" v-model="formData.inputEndDate"
-            placeholder="End Date" type="text" />
+          <VueDatePicker
+            class="dp"
+            label="End Date"
+            name="inputEndDate"
+            v-model="formData.inputEndDate"
+            placeholder="End Date"
+            type="text"
+          />
           <CustomErrorMessage name="inputEndDate" />
         </div>
         <div class="col-span-12 flex justify-end gap-1">
-          <TwButton variant="primary" type="button" class="border border-gray-900" @click="
-            clear();
-          toggleForm();
-          getData(undefined);
-          ">
+          <TwButton
+            variant="primary"
+            type="button"
+            class="border border-gray-900"
+            @click="
+              clear();
+              toggleForm();
+              getData(undefined);
+            "
+          >
             Close
           </TwButton>
-          <TwButton ripple variant="secondary" type="button" class="dark:text-gray-200 dark:!border-gray-800 dark:border"
-            @click="clear()">
+          <TwButton
+            ripple
+            variant="secondary"
+            type="button"
+            class="dark:text-gray-200 dark:!border-gray-800 dark:border"
+            @click="clear()"
+          >
             Reset
           </TwButton>
           <TwButton variant="primary"> Submit </TwButton>

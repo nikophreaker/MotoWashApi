@@ -20,7 +20,6 @@ import {
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 
-
 const datas = ref({
   column: [
     {
@@ -150,7 +149,7 @@ async function getTransaction() {
       } else {
       }
     })
-    .catch((err) => { });
+    .catch((err) => {});
 }
 
 async function addTransaction() {
@@ -300,7 +299,7 @@ async function getCustomer() {
       } else {
       }
     })
-    .catch((err) => { });
+    .catch((err) => {});
 }
 
 //Product fetch
@@ -328,7 +327,7 @@ async function getProduct() {
       } else {
       }
     })
-    .catch((err) => { });
+    .catch((err) => {});
 }
 
 const composableForm = useForm();
@@ -420,9 +419,7 @@ function getData(data: any) {
   currentData.value = data;
   if (data != undefined) {
     formData.selectCustomer = data.detail_user[0]._id;
-    formData.multiSelectProduct = data.detail_product.map(
-      (obj: any) => obj._id
-    );
+    formData.multiSelectProduct = data.detail_product.map((obj: any) => obj._id);
     formData.inputDate = data.transactionDate;
     formData.inputTotal = data.totalAmount;
     formData.inputPaymentMethod = data.paymentMethod;
@@ -457,19 +454,45 @@ watch(filterDate, (value) => {
     <hr class="my-2 border dark:border-gray-700" />
     <div v-show="!formShow">
       <div class="col-span-12 flex justify-start gap-1">
-        <TwButton variant="primary" icon="file-plus" class="border border-gray-900 my-2" @click="toggleForm()">
+        <TwButton
+          variant="primary"
+          icon="file-plus"
+          class="border border-gray-900 my-2"
+          @click="toggleForm()"
+        >
           Add Data
         </TwButton>
       </div>
       <div class="col-span-12 flex justify-start gap-1 my-2">
-        <VueDatePicker class="dp" label="Start Date" name="startDate" v-model="filterDate.startDate"
-          placeholder="Input Start Date" type="text" />
-        <VueDatePicker class="dp" label="End Date" name="endDate" v-model="filterDate.endDate"
-          placeholder="Input End Date" type="text" />
+        <VueDatePicker
+          class="dp"
+          label="Start Date"
+          name="startDate"
+          v-model="filterDate.startDate"
+          placeholder="Input Start Date"
+          type="text"
+        />
+        <VueDatePicker
+          class="dp"
+          label="End Date"
+          name="endDate"
+          v-model="filterDate.endDate"
+          placeholder="Input End Date"
+          type="text"
+        />
       </div>
-      <TwDatatableClient class="!dark:text-gray-200" v-model:search="datas.search" v-model:limit="datas.limit"
-        v-model:selected="datas.selected" v-model:sort-by="datas.sortBy" v-model:sort-type="datas.sortType"
-        :column="datas.column" :data="datas.data" :setting="datas.setting" @datatable:column-hook="datatableHook">
+      <TwDatatableClient
+        class="!dark:text-gray-200"
+        v-model:search="datas.search"
+        v-model:limit="datas.limit"
+        v-model:selected="datas.selected"
+        v-model:sort-by="datas.sortBy"
+        v-model:sort-type="datas.sortType"
+        :column="datas.column"
+        :data="datas.data"
+        :setting="datas.setting"
+        @datatable:column-hook="datatableHook"
+      >
         <template #row="{ column, data }">
           <template v-if="column.field === 'name'">
             {{ data.detail_user.map((obj: any) => obj.name).toString() }}
@@ -502,15 +525,17 @@ watch(filterDate, (value) => {
           </template>
           <template v-if="column.field === 'action'">
             <div class="flex gap-2 justify-center">
-              <TwButton variant="primary" class="border border-gray-900" @click="
-                toggleForm();
-              getData(data);
-              ">
+              <TwButton
+                variant="primary"
+                class="border border-gray-900"
+                @click="
+                  toggleForm();
+                  getData(data);
+                "
+              >
                 Edit
               </TwButton>
-              <TwButton variant="danger" @click="toggleDialog(data)">
-                Delete
-              </TwButton>
+              <TwButton variant="danger" @click="toggleDialog(data)"> Delete </TwButton>
             </div>
           </template>
         </template>
@@ -540,66 +565,112 @@ watch(filterDate, (value) => {
     </div>
     <div v-show="formShow">
       <h1 class="font-bold">
-        {{
-          currentData != undefined
-          ? `Update Data ${currentData.name}`
-          : "Tambah Data"
-        }}
+        {{ currentData != undefined ? `Update Data ${currentData.name}` : "Tambah Data" }}
       </h1>
-      <TwForm :name="formName"
+      <TwForm
+        :name="formName"
         class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
         :class="{
           'tw-shake': isError,
-        }" :rules="formRules" @submit="
-  currentData != undefined ? updateTransaction() : addTransaction()
-  " :custom-field-name="{
-    inputDate: 'Input',
-    inputTotal: 'Input',
-    inputPaymentMethod: 'Input',
-    inputPaymentStatus: 'Input',
-  }">
+        }"
+        :rules="formRules"
+        @submit="currentData != undefined ? updateTransaction() : addTransaction()"
+        :custom-field-name="{
+          inputDate: 'Input',
+          inputTotal: 'Input',
+          inputPaymentMethod: 'Input',
+          inputPaymentStatus: 'Input',
+        }"
+      >
         <div class="col-span-12">
-          <TwSelect label="Name Customer" name="selectCustomer" v-model="formData.selectCustomer" :items="customerList"
-            placeholder="Choose Customer" />
+          <TwSelect
+            label="Name Customer"
+            name="selectCustomer"
+            v-model="formData.selectCustomer"
+            :items="customerList"
+            placeholder="Choose Customer"
+          />
           <CustomErrorMessage name="selectCustomer" />
         </div>
         <div class="col-span-12">
-          <TwMultiSelect label="Select Product" name="multiSelectProduct" v-model="formData.multiSelectProduct"
-            :items="productList" placeholder="Choose Product" />
+          <TwMultiSelect
+            label="Select Product"
+            name="multiSelectProduct"
+            v-model="formData.multiSelectProduct"
+            :items="productList"
+            placeholder="Choose Product"
+          />
           <CustomErrorMessage name="multiSelectProduct" />
         </div>
         <div class="col-span-12">
-          <TwInput label="Transaction Date" name="inputDate" v-model="formData.inputDate" placeholder="Transaction Date"
-            type="text" disabled />
-          <VueDatePicker class="dp" label="Transaction Date" name="inputDate" v-model="formData.inputDate"
-            placeholder="Input Date" type="text" />
+          <TwInput
+            label="Transaction Date"
+            name="inputDate"
+            v-model="formData.inputDate"
+            placeholder="Transaction Date"
+            type="text"
+            disabled
+          />
+          <VueDatePicker
+            class="dp"
+            label="Transaction Date"
+            name="inputDate"
+            v-model="formData.inputDate"
+            placeholder="Input Date"
+            type="text"
+          />
           <CustomErrorMessage name="inputDate" />
         </div>
         <div class="col-span-12">
-          <TwInput label="Total Amount" name="inputTotal" v-model="formData.inputTotal" placeholder="Input Total"
-            type="text" />
+          <TwInput
+            label="Total Amount"
+            name="inputTotal"
+            v-model="formData.inputTotal"
+            placeholder="Input Total"
+            type="text"
+          />
           <CustomErrorMessage name="inputTotal" />
         </div>
         <div class="col-span-12">
-          <TwInput label="Payment Method" name="inputPaymentMethod" v-model="formData.inputPaymentMethod"
-            placeholder="Input Method" type="text" />
+          <TwInput
+            label="Payment Method"
+            name="inputPaymentMethod"
+            v-model="formData.inputPaymentMethod"
+            placeholder="Input Method"
+            type="text"
+          />
           <CustomErrorMessage name="inputPaymentMethod" />
         </div>
         <div class="col-span-12">
-          <TwInput label="Payment Status" name="inputPaymentStatus" v-model="formData.inputPaymentStatus"
-            placeholder="Input Status" type="text" />
+          <TwInput
+            label="Payment Status"
+            name="inputPaymentStatus"
+            v-model="formData.inputPaymentStatus"
+            placeholder="Input Status"
+            type="text"
+          />
           <CustomErrorMessage name="inputPaymentStatus" />
         </div>
         <div class="col-span-12 flex justify-end gap-1">
-          <TwButton variant="primary" type="button" class="border border-gray-900" @click="
-            clear();
-          toggleForm();
-          getData(undefined);
-          ">
+          <TwButton
+            variant="primary"
+            type="button"
+            class="border border-gray-900"
+            @click="
+              clear();
+              toggleForm();
+              getData(undefined);
+            "
+          >
             Close
           </TwButton>
-          <TwButton ripple variant="secondary" type="button" class="dark:text-gray-200 dark:!border-gray-800 dark:border"
-            @click="clear()">
+          <TwButton
+            ripple
+            variant="secondary"
+            type="button"
+            class="dark:text-gray-200 dark:!border-gray-800 dark:border"
+            @click="clear()"
+          >
             Reset
           </TwButton>
           <TwButton variant="primary"> Submit </TwButton>
