@@ -42,3 +42,6 @@ jobs:
           MONGODBUSERNAME: ""
           MONGODBPASSWORD: ""
           MONGODBAUTHSOURCE: ""
+
+      - name: Running
+        run: node .output/server/index.mjs # The build command of your project

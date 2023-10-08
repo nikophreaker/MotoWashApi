@@ -17,6 +17,9 @@ export default defineNuxtConfig({
     },
     secretKey: process.env.SECRET_TOKEN
   },
+  router: {
+
+  },
   build: {
     transpile: ["@vuepic/vue-datepicker", 'jsonwebtoken'],
   },
