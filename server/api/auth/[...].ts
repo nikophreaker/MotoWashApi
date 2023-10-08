@@ -4,7 +4,7 @@ import { NuxtAuthHandler } from '#auth'
 import mysql from 'mysql2/promise'
 
 export default NuxtAuthHandler({
-  // A secret string you define, to ensure correct encryption
+  // A secret string you define, to ensure correct encryptions
   secret: process.env.SECRET_TOKEN,
   pages: {
     signIn: "/login"
