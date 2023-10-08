@@ -18,7 +18,7 @@ export default defineNuxtConfig({
     secretKey: process.env.SECRET_TOKEN
   },
   build: {
-    transpile: ["@vuepic/vue-datepicker"],
+    transpile: ["@vuepic/vue-datepicker", 'jsonwebtoken'],
   },
   imports: {
     dirs: ["store"],
@@ -67,11 +67,29 @@ export default defineNuxtConfig({
       // Whether to periodically refresh the session. Change this to `true` for a refresh every seconds or set this to a number like `5000` for a refresh every 5000 milliseconds (aka: 5 seconds)
       enableRefreshPeriodically: false,
       // Whether to refresh the session whenever a window focus event happens, i.e, when your user refocuses the window. Set this to `false` to turn this off
-      enableRefreshOnWindowFocus: true,
+      enableRefreshOnWindowFocus: false,
     },
     // Select the default-provider to use when `signIn` is called. Setting this here will also effect the global middleware behavior: E.g., when you set it to `github` and the user is unauthorized, they will be directly forwarded to the Github OAuth page instead of seeing the app-login page
     provider: {
-      type: 'local'
+      type: 'local',
+      endpoints: {
+        signIn: {
+          path: '/login',
+          method: 'post',
+        },
+        signOut: {
+          path: '/logout',
+          method: 'post',
+        },
+        getSession: {
+          path: '/user',
+          method: 'get',
+        },
+      },
+      token: {
+        signInResponseTokenPointer: '/token/bearer'
+      },
+      sessionDataType: { id: 'string', email: 'string', name: 'string', role: 'admin | guest | account', subscriptions: "{ id: number, status: 'ACTIVE' | 'INACTIVE' }[]" }
     },
     // Configuration of the global auth-middleware (only applies if you set `globalAppMiddleware: true` above!)
     globalAppMiddleware: {

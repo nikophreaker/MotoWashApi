@@ -17,6 +17,7 @@
     "@sidebase/nuxt-auth": "^0.6.0-beta.5",
     "@tailwindcss/typography": "^0.5.8",
     "@types/feather-icons": "^4.29.2",
+    "@types/jsonwebtoken": "^9.0.3",
     "@types/mysql": "^2.15.22",
     "@types/node": "^20.8.2",
     "@vueuse/core": "^10.4.1",
@@ -36,9 +37,11 @@
     "axios": "^1.5.1",
     "chart.js": "^4.4.0",
     "feather-icons": "^4.29.1",
+    "jsonwebtoken": "^9.0.0",
     "mysql2": "^3.6.1",
     "pinia": "^2.1.6",
     "vue-chartjs": "^5.2.0",
-    "vue3-tailwind": "^0.3.4"
+    "vue3-tailwind": "^0.3.4",
+    "zod": "^3.21.4"
   }
 }

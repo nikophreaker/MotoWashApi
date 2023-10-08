@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { TwButton, TwDropdownMenu, TwFeather } from "vue3-tailwind";
 import { useSidebarStore } from "~~/store/sidebar";
-import { useSession, signIn, signOut } from "next-auth/react"
+// import { useSession, signIn, signOut } from "next-auth/react"
+import { useAuth } from '#imports'
+
+const { signIn, token, data, status, lastRefreshedAt, signOut, getSession } = useAuth()
 
 const sidebarStore = useSidebarStore();
 const animationOpenClose = useAnimationOpenClose();
@@ -51,7 +54,7 @@ const logout = () => {
                 </div>
               </button>
             </NuxtLink>
-            <TwButton @click="signOut()" variant="none" icon="log-out"
+            <TwButton @click="signOut({ callbackUrl: '/login' })" variant="none" icon="log-out"
               class="block w-full px-4 py-2 text-sm leading-5 text-gray-700 dark:text-gray-200 text-left hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 transition">
               Logout
             </TwButton>
