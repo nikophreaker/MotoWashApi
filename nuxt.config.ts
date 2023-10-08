@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  ssr: false,
+  ssr: true,
   devtools: { enabled: false },
   runtimeConfig: {
     dbUrl: process.env.DATABASE_URL,
