@@ -33,6 +33,7 @@
 #           DATABASE_URL: "mongodb://127.0.0.1:27017"
 #           ORIGIN_URL: "https://funwash.fun"
 #           HOST: "auth-db1092.hstgr.io"
+#           PORT = "3306"
 #           DBNAME: "u658317472_funwash"
 
 #           DBUSERNAME: "u658317472_funwash"
