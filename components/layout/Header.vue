@@ -5,7 +5,7 @@ import { useSession, signIn, signOut } from "next-auth/react"
 
 const sidebarStore = useSidebarStore();
 const animationOpenClose = useAnimationOpenClose();
-const store = useTokenStore();
+// const store = useTokenStore();
 
 const router = useRouter();
 const logout = () => {

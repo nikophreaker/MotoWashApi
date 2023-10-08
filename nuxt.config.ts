@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  ssr: false,
-  devtools: { enabled: true },
+  ssr: true,
+  devtools: { enabled: false },
   runtimeConfig: {
     dbUrl: process.env.DATABASE_URL,
     dbName: process.env.DBNAME,
@@ -54,7 +54,7 @@ export default defineNuxtConfig({
       pass: process.env.MONGODBPASSWORD,
     },
     modelsDir: "./models",
-    devtools: true,
+    devtools: false,
   },
   auth: {
     // The module is enabled. Change this to disable the module
