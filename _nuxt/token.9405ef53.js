@@ -1,0 +1,1 @@
+import{a3 as s,q as n}from"./entry.1da6d735.js";const o=s("_ga_n",{maxAge:60*15}),t=s("role",{maxAge:60*15}),a=n({id:"token-store",state:()=>({token:o.value,role:t.value}),actions:{saveToken(e){this.token=o.value=e},setRole(e){this.role=t.value=e}},getters:{userToken:e=>e.token,userRole:e=>e.role}});export{a as u};
