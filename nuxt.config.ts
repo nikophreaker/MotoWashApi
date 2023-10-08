@@ -59,6 +59,10 @@ export default defineNuxtConfig({
   auth: {
     // The module is enabled. Change this to disable the module
     isEnabled: true,
+
+    provider: {
+      type: 'authjs'
+    }
     // The origin is set to the development origin. Change this when deploying to production by setting `origin` in this config before build-time or by exporting `AUTH_ORIGIN` by running `export AUTH_ORIGIN=...`
     baseURL: `${process.env.ORIGIN_URL}/api/auth`,
     // The base path to the authentication endpoints. Change this if you want to add your auth-endpoints at a non-default location
