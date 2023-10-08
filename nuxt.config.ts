@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  ssr: true,
+  // ssr: true,
   devtools: { enabled: false },
   runtimeConfig: {
     dbUrl: process.env.DATABASE_URL,
@@ -24,8 +24,8 @@ export default defineNuxtConfig({
     dirs: ["store"],
   },
   routeRules: {
-    "/api/**": { ssr: false, swr: false, cache: false },
-    "/**": { ssr: true, swr: true },
+    // "/api/**": { ssr: false, swr: false, cache: false },
+    // "/**": { ssr: true, swr: true },
   },
   typescript: {
     shim: false,
