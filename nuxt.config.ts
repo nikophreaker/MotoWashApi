@@ -70,7 +70,6 @@ export default defineNuxtConfig({
       enableRefreshOnWindowFocus: true,
     },
     // Select the default-provider to use when `signIn` is called. Setting this here will also effect the global middleware behavior: E.g., when you set it to `github` and the user is unauthorized, they will be directly forwarded to the Github OAuth page instead of seeing the app-login page
-
     provider: {
       type: 'authjs'
     },
