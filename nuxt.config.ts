@@ -17,9 +17,6 @@ export default defineNuxtConfig({
     },
     secretKey: process.env.SECRET_TOKEN
   },
-  router: {
-
-  },
   build: {
     transpile: ["@vuepic/vue-datepicker", 'jsonwebtoken'],
   },
@@ -27,8 +24,8 @@ export default defineNuxtConfig({
     dirs: ["store"],
   },
   routeRules: {
-    "/api/**": { swr: false, cache: false },
-    "/**": { swr: true },
+    "/api/**": { ssr: false, swr: false, cache: false },
+    "/**": { ssr: true, swr: true },
   },
   typescript: {
     shim: false,
@@ -90,7 +87,7 @@ export default defineNuxtConfig({
         },
       },
       token: {
-        signInResponseTokenPointer: '/token/bearer'
+        signInResponseTokenPointer: '/token/accessToken',
       },
       sessionDataType: { id: 'string', email: 'string', name: 'string', role: 'admin | guest | account', subscriptions: "{ id: number, status: 'ACTIVE' | 'INACTIVE' }[]" }
     },

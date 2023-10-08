@@ -18,7 +18,7 @@ jobs:
         run: npm install
 
       - name: Build
-        run: npm run build # The build command of your project generate
+        run: npm run generate # The build command of your project generate
 
       - name: Push
         uses: s0/git-publish-subdir-action@develop
@@ -42,6 +42,3 @@ jobs:
           MONGODBUSERNAME: ""
           MONGODBPASSWORD: ""
           MONGODBAUTHSOURCE: ""
-
-      - name: Running
-        run: node .output/server/index.mjs # The build command of your project
