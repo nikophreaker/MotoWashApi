@@ -31,7 +31,7 @@ jobs:
           SECRET_TOKEN: "JwB4VUIUTsPn1FaJW6rqZwZzcvyC12MvsxNgn7uHfjc="
           NEXTAUTH_SECRET: "JwB4VUIUTsPn1FaJW6rqZwZzcvyC12MvsxNgn7uHfjc="
           DATABASE_URL: "mongodb://127.0.0.1:27017"
-          ORIGIN_URL: "https://funwash.fun/"
+          ORIGIN_URL: "https://funwash.fun"
           HOST: "https://auth-db1092.hstgr.io/"
           DBNAME: "u658317472_funwash"
 
