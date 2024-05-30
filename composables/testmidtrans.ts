@@ -8,7 +8,7 @@ export const useMidtrans = async () => {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        authorization: "Basic ZnVud2FzaDU4QGdtYWlsLmNvbTpQYW5na2FsYW44",
+        authorization: "",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "*",
         "Access-Control-Allow-Headers":
